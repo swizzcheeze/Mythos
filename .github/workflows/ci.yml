@@ -25,20 +25,20 @@ jobs:
           python-version: '3.11'
 
       - name: Install Python dependencies
-        working-directory: mythos/mythos_backend
+        working-directory: mythos_backend
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Start FastAPI backend
-        working-directory: mythos/mythos_backend
+        working-directory: mythos_backend
         run: |
           python mythos_backend.py &
           echo "Backend starting..."
           sleep 5
 
       - name: Run Healthcheck
-        working-directory: mythos
+        working-directory: .
         env:
           MYTHOS_MCP_PROTOCOL: 2024-10-07
         run: |
@@ -48,7 +48,7 @@ jobs:
         if: always()
         run: |
           mkdir -p artifacts
-          cp mythos/mcp-healthcheck.js artifacts/ || true
+          cp mcp-healthcheck.js artifacts/ || true
         shell: bash
 
       - name: Upload Artifact
