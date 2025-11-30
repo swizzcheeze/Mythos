@@ -8,7 +8,7 @@ on:
 
 jobs:
   healthcheck:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Checkout
@@ -30,19 +30,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Start FastAPI backend
+      - name: Start FastAPI backend (uvicorn + readiness loop)
         working-directory: mythos_backend
         run: |
-          uvicorn mythos_backend:app --host 127.0.0.1 --port 8001 &
+          nohup python -m uvicorn mythos_backend:app --host 127.0.0.1 --port 8001 &
           echo "Backend starting via uvicorn..."
-          for i in {1..15}; do
-            if curl -sSf http://127.0.0.1:8001/healthz > /dev/null; then
-              echo "Backend healthy"; break;
-            fi
-            echo "Waiting for backend (attempt $i)...";
-            sleep 1;
+          for i in {1..40}; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8001/healthz || true)
+            if [ "$code" = "200" ]; then echo "Backend healthy"; break; fi
+            echo "Waiting for backend (attempt $i)... (status=$code)";
+            sleep 0.25;
           done
-          curl -sSf http://127.0.0.1:8001/healthz > /dev/null || { echo "Backend failed to start"; exit 1; }
+          code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8001/healthz || true)
+          if [ "$code" != "200" ]; then echo "Backend failed to start (final status $code)"; exit 1; fi
 
       - name: Run Healthcheck
         working-directory: .
@@ -53,16 +53,20 @@ jobs:
         run: |
           node mcp-healthcheck.js
 
-      - name: Archive Logs
+      - name: Archive Logs & World Data
         if: always()
         run: |
           mkdir -p artifacts
+          # Save healthcheck script and backend world data snapshots
           cp mcp-healthcheck.js artifacts/ || true
+          cp -r world_data artifacts/world_data || true
+          # Capture recent backend log if available (requires exposing logs in workflow context)
+          echo "(Backend logs not captured; consider adding dockerized run if needed)" > artifacts/README.txt
         shell: bash
 
       - name: Upload Artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: healthcheck-assets
+          name: healthcheck-artifacts
           path: artifacts
