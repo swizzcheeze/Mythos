@@ -79,6 +79,15 @@ node .\mcp-healthcheck.js
 
 Configure LM Studio MCP to point at `mythos-bridge.js` and set `MYTHOS_MCP_PROTOCOL=2024-10-07`.
 
+Path examples (adjust for your system):
+| OS | Example Command Args |
+|----|----------------------|
+| Windows | `"C:\\path\\to\\mythos\\mythos-bridge.js"` |
+| macOS | `/Users/you/path/mythos/mythos-bridge.js` |
+| Linux | `/home/you/mythos/mythos-bridge.js` |
+
+If using LM Studio config JSON, replace `<drive>` placeholder with your actual absolute path. Relative paths may fail if LM Studio launches from a different working directory.
+
 ---
 
 ## 🩺 Healthcheck & Reliability

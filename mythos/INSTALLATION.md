@@ -50,14 +50,14 @@ Exit code `0` indicates full pass; non-zero signals reliability issue.
 
 ### 4. Configure LM Studio
 
-Add to your LM Studio MCP configuration (usually in settings or config file):
+Add to your LM Studio MCP configuration (usually in settings or config file). Replace the path with your absolute local path:
 
 ```json
 {
   "mcpServers": {
     "mythos": {
       "command": "node",
-      "args": ["<drive>\\mythos\\mythos-bridge.js"],
+      "args": ["C:\\Users\\you\\Projects\\Mythos\\mythos-bridge.js"],
       "env": {
         "MYTHOS_MCP_PROTOCOL": "2024-10-07"
       }
@@ -67,6 +67,15 @@ Add to your LM Studio MCP configuration (usually in settings or config file):
 ```
 
 Restart LM Studio and verify the `mythos` tools appear in the tools panel.
+
+### Path Reference (Cross-Platform)
+| OS | Example Absolute Path |
+|----|------------------------|
+| Windows | `C:\\Users\\you\\Projects\\Mythos\\mythos-bridge.js` |
+| macOS | `/Users/you/Projects/Mythos/mythos-bridge.js` |
+| Linux | `/home/you/Mythos/mythos-bridge.js` |
+
+Avoid relative paths; LM Studio may resolve them from a different working directory. If you move the project, update the MCP config.
 
 ## Testing & Validation
 
