@@ -40,6 +40,12 @@ Phases & expectations:
   - Multi-framework composite (diversity metric)
   - Creation session lifecycle (start/update/finalize/list)
   - Roleplay persona prompt from started character session
+### CI Tips
+
+- Start backend via uvicorn and wait for `/healthz` before healthcheck.
+- Set bridge env: `MYTHOS_MCP_PROTOCOL=2024-10-07`, `MYTHOS_SHOW_JSON=1`, `MYTHOS_COLOR=0`.
+- Abort early on the first HTTP 404 from `tools/call` endpoints.
+- Archive logs from healthcheck and backend for debugging in CI runners.
 
 Timeouts (defaults in script): `INIT_TIMEOUT_MS=4000`, `TOOLS_TIMEOUT_MS=4000`, `CALLS_TIMEOUT_MS=8000`.
 

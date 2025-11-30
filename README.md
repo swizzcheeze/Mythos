@@ -209,6 +209,23 @@ Tips
 
 ---
 
+## 🧪 CI Notes
+
+- Pipeline Focus: Run `mcp-healthcheck.js` after starting the backend to validate MCP negotiation and core tool calls.
+- Backend Start: Prefer `uvicorn mythos_backend:app --host 127.0.0.1 --port 8001` with a short `/healthz` readiness loop before healthcheck.
+- Env Toggles (Bridge):
+  - `MYTHOS_MCP_PROTOCOL=2024-10-07` (LM Studio rejects newer versions)
+  - `MYTHOS_SHOW_JSON=1` (force raw JSON for reliable parsing)
+  - `MYTHOS_COLOR=0` (disable ANSI for clean logs)
+- Early Abort: Treat the first HTTP 404 from any `tools/call` as a schema drift or missing endpoint.
+- Common Failures:
+  - Backend not reachable → ensure docker service up and port 8001 mapped.
+  - Tool validation 422 → align bridge input schemas with backend Pydantic required fields.
+  - Protocol mismatch → enforce `2024-10-07`.
+- Artifacts: Optionally archive healthcheck console output and backend logs to aid debugging.
+
+---
+
 ## 🔄 Workflow Examples
 **Interactive Creation Session**
 1. `mythos_creation_session_start` (template_type="character")
