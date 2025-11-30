@@ -187,6 +187,21 @@ const tools = [
     }
   },
   {
+    name: 'mythos_roleplay_start',
+    description: 'Start roleplay by generating a persona prompt from a character session or provided fields.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        session_id: { type: 'string', description: 'Optional: existing character creation session id.' },
+        character_name: { type: 'string', description: 'Optional: character name when no session provided.' },
+        bio: { type: 'string', description: 'Optional: short bio/personality summary.' },
+        style: { type: 'string', description: "Optional roleplay style (e.g., 'Fantasy', 'Noir')." },
+        safety_guidelines: { type: 'array', items: { type: 'string' }, description: 'Optional list of behavioral guidelines.' }
+      },
+      required: []
+    }
+  },
+  {
     name: 'mythos_creation_session_list',
     description: 'List active creation sessions with simple progress metadata.',
     inputSchema: {
@@ -315,6 +330,26 @@ function formatSessionToolOutput(toolName, result, args) {
       lines.push('\nNext: populate fields with mythos_creation_session_update.' );
       return lines.join('\n');
     }
+    if (toolName === 'mythos_roleplay_start') {
+      const showRaw = process.env.MYTHOS_SHOW_JSON === '1';
+      if (showRaw) return JSON.stringify(result, null, 2);
+      const p = result.persona || {};
+      const lines = [];
+      lines.push(`Roleplay Persona: ${p.name || 'Unnamed Character'}`);
+      lines.push(`Style: ${p.style || 'Fantasy'}`);
+      if (Array.isArray(p.traits) && p.traits.length) {
+        lines.push('Traits:');
+        p.traits.slice(0, 8).forEach(t => lines.push(`- ${t}`));
+      }
+      if (Array.isArray(p.background) && p.background.length) {
+        lines.push('Background:');
+        p.background.slice(0, 8).forEach(b => lines.push(`- ${b}`));
+      }
+      lines.push('---');
+      lines.push('System Instructions:');
+      lines.push(result.instructions || '(no instructions)');
+      return lines.join('\n');
+    }
     if (toolName === 'mythos_creation_session_update') {
       const { session_id, progress, filled, message } = result;
       const { completed_fields, total_fields } = progress || { completed_fields: 0, total_fields: 0 };
@@ -350,8 +385,8 @@ function formatSessionToolOutput(toolName, result, args) {
           }
         }
       }
-      // Global remaining summary
-      const stats = remainingGlobal(result.filled ? result.sections || {} : result.sections || {}, filled);
+      // Global remaining summary (sections now included in update response)
+      const stats = remainingGlobal(result.sections || {}, filled);
       lines.push(`\nRemaining fields: ${stats.remaining} of ${stats.total}`);
       lines.push('Per-section progress:');
       lines.push(...sectionStats(result.sections || {}, filled));

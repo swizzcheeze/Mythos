@@ -64,6 +64,7 @@ Returns primary/secondary archetypes from each framework plus a synthesis summar
 | `mythos_get_inspiration` | Thematic creative constraints |
 | `mythos_list_archetype_styles` | Enumerate frameworks |
 | `mythos_list_tools` | Human-readable catalog |
+| `mythos_roleplay_start` | Generate a persona prompt for in-character roleplay |
 
 ---
 
@@ -101,6 +102,7 @@ If using LM Studio config JSON, replace `<drive>` placeholder with your actual a
   - `mythos_archetype_analysis` (checks semantic fields: `confidence_primary`, `confidence_secondary`, `tension_score`)
   - `mythos_multi_archetype_analysis` (verifies composite fields: `analyses`, `composite_tension_metric`)
   - Creation session lifecycle: start → update → finalize → list
+  - Roleplay: generate persona instructions from the started character session
 
 Timeouts (defaults):
 ```
@@ -167,6 +169,10 @@ mythos/
 
 ## 📖 Documentation
 - [Installation Guide](INSTALLATION.md)
+- Roleplay quick test (HTTP):
+  ```powershell
+  Invoke-WebRequest -Uri http://localhost:8001/call/mythos_roleplay_start -Method POST -ContentType 'application/json' -Body '{"character_name":"Seren Valis","bio":"Quiet scholar of forbidden runes.","style":"Fantasy"}'
+  ```
 - FastAPI docs: `http://localhost:8001/docs` (running)
 - Agent / development patterns: `.github/copilot-instructions.md`
 

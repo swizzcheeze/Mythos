@@ -396,5 +396,1409 @@
     ],
     "filled": {},
     "history": []
+  },
+  "83a70aa3-e239-4395-ad33-d18d82b66a9a": {
+    "id": "83a70aa3-e239-4395-ad33-d18d82b66a9a",
+    "template_type": "character",
+    "style": "Fantasy",
+    "sections": {
+      "Basic Info": [
+        "Name",
+        "Age/Era",
+        "Occupation/Role",
+        "Physical Description"
+      ],
+      "Core Identity": [
+        "Primary Motivation",
+        "Fatal Flaw",
+        "Greatest Fear",
+        "Defining Trait"
+      ],
+      "Background": [
+        "Origin Story",
+        "Formative Event",
+        "Relationships",
+        "Current Status"
+      ],
+      "Abilities": [
+        "Skills/Powers",
+        "Weaknesses",
+        "Equipment/Tools",
+        "Special Abilities"
+      ],
+      "Development": [
+        "Character Arc",
+        "Internal Conflict",
+        "External Conflict",
+        "Potential Endings"
+      ]
+    },
+    "prompts": [
+      "What secret does this character keep from everyone?",
+      "How would they react under extreme pressure?",
+      "What would they sacrifice everything for?",
+      "What's the one thing they refuse to do, no matter what?"
+    ],
+    "filled": {
+      "Basic Info": {
+        "Name": "Test Character"
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Basic Info": {
+            "Name": "Test Character"
+          }
+        }
+      },
+      {
+        "type": "finalize",
+        "preview_length": 782
+      }
+    ]
+  },
+  "ee7537bd-93f3-4029-bf11-301985512ca2": {
+    "id": "ee7537bd-93f3-4029-bf11-301985512ca2",
+    "template_type": "world",
+    "style": "Fantasy",
+    "sections": {
+      "Core Identity": [
+        "World Name",
+        "Central Theme",
+        "Tone/Atmosphere",
+        "Era/Timeline"
+      ],
+      "Geography": [
+        "Major Regions",
+        "Landforms",
+        "Climate Zones",
+        "Natural Wonders"
+      ],
+      "Cultures": [
+        "Dominant Cultures",
+        "Languages",
+        "Shared Traditions",
+        "Cultural Conflicts"
+      ],
+      "History & Myth": [
+        "Founding Event",
+        "Myths/Legends",
+        "Cataclysms",
+        "Turning Points"
+      ],
+      "Economy & Resources": [
+        "Key Resources",
+        "Trade Hubs",
+        "Scarce Commodities",
+        "Economic Tensions"
+      ],
+      "Magic / Technology": [
+        "Systems",
+        "Limitations",
+        "Unique Innovations",
+        "Forbidden Knowledge"
+      ],
+      "Factions & Power": [
+        "Major Factions",
+        "Power Balance",
+        "Hidden Influences",
+        "Emerging Threats"
+      ],
+      "Ecology": [
+        "Biome Types",
+        "Keystone Species",
+        "Environmental Pressures",
+        "Extinction Risks"
+      ],
+      "Conflicts & Tensions": [
+        "Active Conflicts",
+        "Rising Tensions",
+        "Moral Dilemmas",
+        "Imminent Crises"
+      ],
+      "Hooks": [
+        "Adventure Hooks",
+        "Mysteries",
+        "Unanswered Questions",
+        "Future Arcs"
+      ]
+    },
+    "prompts": [
+      "What unseen force quietly shapes the world's destiny?",
+      "Which region holds a secret that could rewrite history?",
+      "What resource is on the brink of collapse and why?",
+      "What contradiction defines this world's identity?"
+    ],
+    "filled": {},
+    "history": []
+  },
+  "bcaabb0f-c54e-4942-ae1f-3588d1deb699": {
+    "id": "bcaabb0f-c54e-4942-ae1f-3588d1deb699",
+    "template_type": "world",
+    "style": "Fantasy",
+    "sections": {
+      "Core Identity": [
+        "World Name",
+        "Central Theme",
+        "Tone/Atmosphere",
+        "Era/Timeline"
+      ],
+      "Geography": [
+        "Major Regions",
+        "Landforms",
+        "Climate Zones",
+        "Natural Wonders"
+      ],
+      "Cultures": [
+        "Dominant Cultures",
+        "Languages",
+        "Shared Traditions",
+        "Cultural Conflicts"
+      ],
+      "History & Myth": [
+        "Founding Event",
+        "Myths/Legends",
+        "Cataclysms",
+        "Turning Points"
+      ],
+      "Economy & Resources": [
+        "Key Resources",
+        "Trade Hubs",
+        "Scarce Commodities",
+        "Economic Tensions"
+      ],
+      "Magic / Technology": [
+        "Systems",
+        "Limitations",
+        "Unique Innovations",
+        "Forbidden Knowledge"
+      ],
+      "Factions & Power": [
+        "Major Factions",
+        "Power Balance",
+        "Hidden Influences",
+        "Emerging Threats"
+      ],
+      "Ecology": [
+        "Biome Types",
+        "Keystone Species",
+        "Environmental Pressures",
+        "Extinction Risks"
+      ],
+      "Conflicts & Tensions": [
+        "Active Conflicts",
+        "Rising Tensions",
+        "Moral Dilemmas",
+        "Imminent Crises"
+      ],
+      "Hooks": [
+        "Adventure Hooks",
+        "Mysteries",
+        "Unanswered Questions",
+        "Future Arcs"
+      ]
+    },
+    "prompts": [
+      "What unseen force quietly shapes the world's destiny?",
+      "Which region holds a secret that could rewrite history?",
+      "What resource is on the brink of collapse and why?",
+      "What contradiction defines this world's identity?"
+    ],
+    "filled": {},
+    "history": []
+  },
+  "0d7fa775-c739-4185-a202-e41e43d1b59b": {
+    "id": "0d7fa775-c739-4185-a202-e41e43d1b59b",
+    "template_type": "world",
+    "style": "Fantasy",
+    "sections": {
+      "Core Identity": [
+        "World Name",
+        "Central Theme",
+        "Tone/Atmosphere",
+        "Era/Timeline"
+      ],
+      "Geography": [
+        "Major Regions",
+        "Landforms",
+        "Climate Zones",
+        "Natural Wonders"
+      ],
+      "Cultures": [
+        "Dominant Cultures",
+        "Languages",
+        "Shared Traditions",
+        "Cultural Conflicts"
+      ],
+      "History & Myth": [
+        "Founding Event",
+        "Myths/Legends",
+        "Cataclysms",
+        "Turning Points"
+      ],
+      "Economy & Resources": [
+        "Key Resources",
+        "Trade Hubs",
+        "Scarce Commodities",
+        "Economic Tensions"
+      ],
+      "Magic / Technology": [
+        "Systems",
+        "Limitations",
+        "Unique Innovations",
+        "Forbidden Knowledge"
+      ],
+      "Factions & Power": [
+        "Major Factions",
+        "Power Balance",
+        "Hidden Influences",
+        "Emerging Threats"
+      ],
+      "Ecology": [
+        "Biome Types",
+        "Keystone Species",
+        "Environmental Pressures",
+        "Extinction Risks"
+      ],
+      "Conflicts & Tensions": [
+        "Active Conflicts",
+        "Rising Tensions",
+        "Moral Dilemmas",
+        "Imminent Crises"
+      ],
+      "Hooks": [
+        "Adventure Hooks",
+        "Mysteries",
+        "Unanswered Questions",
+        "Future Arcs"
+      ]
+    },
+    "prompts": [
+      "What unseen force quietly shapes the world's destiny?",
+      "Which region holds a secret that could rewrite history?",
+      "What resource is on the brink of collapse and why?",
+      "What contradiction defines this world's identity?"
+    ],
+    "filled": {
+      "Core Identity": {
+        "World Name": "Mythica",
+        "Central Theme": "Technosexual Cycle of Light & Shadow"
+      },
+      "Geography": {
+        "Major Regions": [
+          "Land of Nymphos",
+          "Land of Lesbians"
+        ],
+        "Landforms": [
+          "lush gardens, winding rivers of silken streams",
+          "cascading waterfalls that shimmer with iridescent light"
+        ],
+        "Climate Zones": [
+          "temperate forest canopy under perpetual twilight",
+          "coastal cliffs where salt breezes mingle with floral perfumes"
+        ],
+        "Natural Wonders": [
+          "the Celestial Arch of Pleasure - a rainbow bridge that arches over the central lake, visible only when two lovers touch it simultaneously"
+        ],
+        "Landmarks": [
+          "the Gardens of Echoing Whispers where trees speak in soft harmonies"
+        ]
+      },
+      "History & Myth": {
+        "Founding Event": [
+          "A cataclysmic clash between different erotic lifestyles culminated in the creation of Cumtopia; survivors merged Technosexual Feedback Loops and ancient magic to form the first Aetheric Communion Grids"
+        ],
+        "Myths/Legends": [
+          "Legend of the First Crystal - an artifact forged from a fallen star, said to amplify communal pleasure tenfold when wielded by true lovers",
+          "Whispering Waterfalls Tale - rivers are believed to carry whispers of ancient gods who taught humanity the art of emotional resonance"
+        ],
+        "Cataclysms": [
+          "The Great Overload Event - an accidental cascade overload during early Aetheric Grid testing caused temporary blackout zones across the Land, cementing consent protocols as sacred law"
+        ],
+        "Turning Points": [
+          "The Consent Accord of 3E-27 - after the Overload disaster, leaders unified to enforce universal consent affirmation, transforming societal governance and shaping modern Euphoric Collectives"
+        ]
+      },
+      "Magic / Technology": {
+        "Systems": [
+          "Technosexual Feedback Loop - bioluminescent neural implants that resonate with emotional frequencies"
+        ],
+        "Limitations": [
+          "Requires consent to activate; overload causes temporary euphoria blackout"
+        ],
+        "Unique Innovations": [
+          "Pleasure-Resonance Crystals - wearable gems that amplify shared sensations when touched",
+          "Aetheric Communion Grids - city-wide networks of subtle energy conduits enabling synchronized orgasms"
+        ]
+      },
+      "Cultures": {
+        "Dominant Cultures": [
+          "Euphoric Collectives - decentralized communities that practice shared pleasure rituals and communal governance"
+        ],
+        "Languages": [
+          "Sylvo - a melodic tongue where pitch modulates emotional resonance; subtle inflections can trigger mild Technosexual feedback effects"
+        ],
+        "Shared Traditions": [
+          "Festival of Communal Resonance - annual celebration where participants synchronize via Aetheric Grids to form collective orgasms, reinforcing social bonds",
+          "Crystal Blessing Ceremony - artisans bless Pleasure-Resonance Crystals with personal intentions during moonlit rituals"
+        ],
+        "Cultural Conflicts": [
+          "The Purist Faction - a minority advocating strict regulation of Technosexual systems, fearing loss of personal autonomy"
+        ]
+      },
+      "Economy & Resources": {
+        "Key Resources": [
+          "Luminite Ore - rare mineral that fuels Aetheric Grids and powers bioluminescent implants; mined in hidden caverns beneath Land of Lesbians",
+          "Pleasure Crystals (Amber-Resonance) - naturally occurring gems found along riverbanks, prized for their amplifying properties"
+        ],
+        "Trade Hubs": [
+          "Harbor of Harmonics - coastal port where Luminite and Pleasure Crystals are exchanged; guarded by Euphoric Collectives' elite guards",
+          "Celestial Bazaar - floating market above the Celestial Arch of Pleasure, accessible only during lunar alignments"
+        ]
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Core Identity": {
+            "World Name": "Mythica",
+            "Central Theme": "Technosexual Cycle of Light & Shadow"
+          }
+        }
+      },
+      {
+        "type": "update",
+        "payload": {
+          "Geography": {
+            "Major Regions": [
+              "Land of Nymphos",
+              "Land of Lesbians"
+            ]
+          }
+        }
+      },
+      {
+        "type": "update",
+        "payload": {
+          "History & Myth": {
+            "Founding Event": "A cataclysmic clash of erotic encounters among different lifestyles, each vying for the ultimate realization known as Cumtopia"
+          }
+        }
+      },
+      {
+        "type": "update",
+        "payload": {
+          "Geography": {
+            "Landforms": [
+              "lush gardens, winding rivers of silken streams",
+              "cascading waterfalls that shimmer with iridescent light"
+            ],
+            "Climate Zones": [
+              "temperate forest canopy under perpetual twilight",
+              "coastal cliffs where salt breezes mingle with floral perfumes"
+            ]
+          }
+        }
+      },
+      {
+        "type": "update",
+        "payload": {
+          "Geography": {
+            "Natural Wonders": [
+              "the Celestial Arch of Pleasure - a rainbow bridge that arches over the central lake, visible only when two lovers touch it simultaneously"
+            ],
+            "Landmarks": [
+              "the Gardens of Echoing Whispers where trees speak in soft harmonies"
+            ]
+          }
+        }
+      },
+      {
+        "type": "update",
+        "payload": {
+          "Magic / Technology": {
+            "Systems": [
+              "Technosexual Feedback Loop - bioluminescent neural implants that resonate with emotional frequencies"
+            ],
+            "Limitations": [
+              "Requires consent to activate; overload causes temporary euphoria blackout"
+            ],
+            "Unique Innovations": [
+              "Pleasure-Resonance Crystals - wearable gems that amplify shared sensations when touched",
+              "Aetheric Communion Grids - city-wide networks of subtle energy conduits enabling synchronized orgasms"
+            ]
+          }
+        }
+      },
+      {
+        "type": "update",
+        "payload": {
+          "Cultures": {
+            "Dominant Cultures": [
+              "Euphoric Collectives - communal groups that organize pleasure festivals and maintain the Aetheric Communion Grids"
+            ],
+            "Languages": [
+              "Lingua Amoris - a tonal language where pitch modulates emotional resonance, often used in intimate settings",
+              "Techno-Fluent - a dialect blending slang with technical jargon for discussing implants and crystal tech"
+            ],
+            "Shared Traditions": [
+              "Festival of Harmonic Confluence: annual event where citizens synchronize via Aetheric Grids to create world-record pleasure waves; includes ritual immersion in the Celestial Arch of Pleasure",
+              "Crystal Blessing Ceremony: artisans bless Pleasure-Resonance Crystals with a harmonized chant, granting them enhanced resonance"
+            ],
+            "Cultural Conflicts": [
+              "The Purist Faction - advocates for strict consent protocols and bans on mass-synchronized orgasms; tensions rise during Grid upgrades"
+            ]
+          }
+        }
+      },
+      {
+        "type": "update",
+        "payload": {
+          "History & Myth": {
+            "Founding Event": "A cataclysmic clash of erotic encounters among different lifestyles, each vying for the ultimate realization known as Cumtopia. The shockwave birthed a world where pleasure became both resource and technology."
+          }
+        }
+      },
+      {
+        "type": "update",
+        "payload": {
+          "Cultures": {
+            "Dominant Cultures": [
+              "Euphoric Collectives - communities that prioritize shared pleasure experiences and communal consent rituals"
+            ],
+            "Languages": [
+              "Syllabic Bliss (a melodic language where tone conveys emotional intensity)"
+            ],
+            "Shared Traditions": [
+              "The Festival of Harmonics, a biannual celebration where synchronized orgasms are ritually performed across the land using Aetheric Communion Grids",
+              "Crystal Blessing Ceremonies - individuals anoint Pleasure-Resonance Crystals during moonlit gatherings"
+            ],
+            "Cultural Conflicts": [
+              "Tension between Euphoric Collectives and traditionalist factions advocating for privacy in pleasure"
+            ]
+          }
+        }
+      },
+      {
+        "type": "update",
+        "payload": {
+          "Cultures": {
+            "Dominant Cultures": [
+              "Euphoric Collectives - communities that prioritize communal pleasure and shared emotional resonance via the Technosexual systems"
+            ],
+            "Languages": [
+              "Sylphia - a melodic language designed to evoke harmonic frequencies when spoken",
+              "Techno-Pleasure Sign - gestural communication using subtle bioluminescent hand signals"
+            ],
+            "Shared Traditions": [
+              "Ritual of Resonance - synchronized group meditations that amplify pleasure through the Aetheric Communion Grids",
+              "Festival of Crystalline Harmony - annual gathering where Pleasure-Resonance Crystals are exchanged and activated collectively"
+            ],
+            "Cultural Conflicts": [
+              "Traditionalists vs. Techno-Enthusiasts - debates over reliance on artificial enhancements versus natural erotic expression"
+            ]
+          }
+        }
+      },
+      {
+        "type": "update",
+        "payload": {
+          "Cultures": {
+            "Dominant Cultures": [
+              "Euphoric Collectives - communities that prioritize shared pleasure experiences through communal rituals and Aetheric Communion Grids"
+            ],
+            "Languages": [
+              "Sensate - a tonal language where pitch variations convey emotional states, often accompanied by bioluminescent vocalizations"
+            ],
+            "Shared Traditions": [
+              "Festival of the Celestial Arch - an annual gathering at the Rainbow Bridge where participants synchronize via Pleasure-Resonance Crystals to create collective euphoria"
+            ],
+            "Cultural Conflicts": [
+              "The Puritanical Vanguard - a minority faction opposing overt technosexual expression, advocating for privacy and traditional emotional boundaries"
+            ]
+          }
+        }
+      },
+      {
+        "type": "update",
+        "payload": {
+          "Cultures": {
+            "Dominant Cultures": [
+              "Euphoric Collectives - decentralized communities centered around shared pleasure festivals and communal consent rituals"
+            ],
+            "Languages": [
+              "Sylphian - a melodic tongue rich with tonal nuances for expressing emotional states; widely used in public spaces to signal openness or boundaries"
+            ],
+            "Shared Traditions": [
+              "The Festival of Harmonics - annual event where citizens gather at the Celestial Arch of Pleasure, synchronizing via Aetheric Communion Grids to create world‑record breaking collective euphoria displays",
+              "Crystal Gifting Ceremonies - exchange of Pleasure-Resonance Crystals as tokens of trust and partnership"
+            ],
+            "Cultural Conflicts": [
+              "The Purist Faction - a minority advocating strict regulation of Technosexual systems, fearing loss of personal autonomy"
+            ]
+          }
+        }
+      },
+      {
+        "type": "update",
+        "payload": {
+          "History & Myth": {
+            "Myths/Legends": [
+              "The Legend of Pleasure's Arch - a myth that the Celestial Arch of Pleasure was forged from the crystallized orgasmic energy released during the founding Clash, forever linking light and shadow in Technosexual harmony"
+            ],
+            "Cataclysms": [
+              "The Great Overload Event - an accidental cascade overload during early Aetheric Grid testing caused temporary blackout zones across the Land, cementing consent protocols as sacred law"
+            ],
+            "Turning Points": [
+              "The Consent Accord of 3E-27 - after the Overload disaster, leaders unified to enforce universal consent affirmation, transforming societal governance and shaping modern Euphoric Collectives"
+            ]
+          }
+        }
+      },
+      {
+        "type": "update",
+        "payload": {
+          "Cultures": {
+            "Dominant Cultures": [
+              "Euphoric Collectives - decentralized communities that practice shared pleasure rituals and communal governance"
+            ],
+            "Languages": [
+              "Sylvo - a melodic tongue where pitch modulates emotional resonance; subtle inflections can trigger mild Technosexual feedback effects"
+            ],
+            "Shared Traditions": [
+              "Festival of Communal Resonance - annual celebration where participants synchronize via Aetheric Grids to form collective orgasms, reinforcing social bonds",
+              "Crystal Blessing Ceremony - artisans bless Pleasure-Resonance Crystals with personal intentions during moonlit rituals"
+            ]
+          },
+          "History & Myth": {
+            "Founding Event": [
+              "A cataclysmic clash between different erotic lifestyles culminated in the creation of Cumtopia; survivors merged Technosexual Feedback Loops and ancient magic to form the first Aetheric Communion Grids"
+            ],
+            "Myths/Legends": [
+              "Legend of the First Crystal - an artifact forged from a fallen star, said to amplify communal pleasure tenfold when wielded by true lovers",
+              "Whispering Waterfalls Tale - rivers are believed to carry whispers of ancient gods who taught humanity the art of emotional resonance"
+            ]
+          },
+          "Economy & Resources": {
+            "Key Resources": [
+              "Luminite Ore - rare mineral that fuels Aetheric Grids and powers bioluminescent implants; mined in hidden caverns beneath Land of Lesbians",
+              "Pleasure Crystals (Amber-Resonance) - naturally occurring gems found along riverbanks, prized for their amplifying properties"
+            ],
+            "Trade Hubs": [
+              "Harbor of Harmonics - coastal port where Luminite and Pleasure Crystals are exchanged; guarded by Euphoric Collectives' elite guards",
+              "Celestial Bazaar - floating market above the Celestial Arch of Pleasure, accessible only during lunar alignments"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "e0ddd733-90f6-4918-8549-47d1145939fb": {
+    "id": "e0ddd733-90f6-4918-8549-47d1145939fb",
+    "template_type": "character",
+    "style": "Fantasy",
+    "sections": {
+      "Basic Info": [
+        "Name",
+        "Age/Era",
+        "Occupation/Role",
+        "Physical Description"
+      ],
+      "Core Identity": [
+        "Primary Motivation",
+        "Fatal Flaw",
+        "Greatest Fear",
+        "Defining Trait"
+      ],
+      "Background": [
+        "Origin Story",
+        "Formative Event",
+        "Relationships",
+        "Current Status"
+      ],
+      "Abilities": [
+        "Skills/Powers",
+        "Weaknesses",
+        "Equipment/Tools",
+        "Special Abilities"
+      ],
+      "Development": [
+        "Character Arc",
+        "Internal Conflict",
+        "External Conflict",
+        "Potential Endings"
+      ]
+    },
+    "prompts": [
+      "What secret does this character keep from everyone?",
+      "How would they react under extreme pressure?",
+      "What would they sacrifice everything for?",
+      "What's the one thing they refuse to do, no matter what?"
+    ],
+    "filled": {},
+    "history": []
+  },
+  "44faf288-d4ed-46d9-a3fd-c20315614764": {
+    "id": "44faf288-d4ed-46d9-a3fd-c20315614764",
+    "template_type": "world",
+    "style": "Fantasy",
+    "sections": {
+      "Core Identity": [
+        "World Name",
+        "Central Theme",
+        "Tone/Atmosphere",
+        "Era/Timeline"
+      ],
+      "Geography": [
+        "Major Regions",
+        "Landforms",
+        "Climate Zones",
+        "Natural Wonders"
+      ],
+      "Cultures": [
+        "Dominant Cultures",
+        "Languages",
+        "Shared Traditions",
+        "Cultural Conflicts"
+      ],
+      "History & Myth": [
+        "Founding Event",
+        "Myths/Legends",
+        "Cataclysms",
+        "Turning Points"
+      ],
+      "Economy & Resources": [
+        "Key Resources",
+        "Trade Hubs",
+        "Scarce Commodities",
+        "Economic Tensions"
+      ],
+      "Magic / Technology": [
+        "Systems",
+        "Limitations",
+        "Unique Innovations",
+        "Forbidden Knowledge"
+      ],
+      "Factions & Power": [
+        "Major Factions",
+        "Power Balance",
+        "Hidden Influences",
+        "Emerging Threats"
+      ],
+      "Ecology": [
+        "Biome Types",
+        "Keystone Species",
+        "Environmental Pressures",
+        "Extinction Risks"
+      ],
+      "Conflicts & Tensions": [
+        "Active Conflicts",
+        "Rising Tensions",
+        "Moral Dilemmas",
+        "Imminent Crises"
+      ],
+      "Hooks": [
+        "Adventure Hooks",
+        "Mysteries",
+        "Unanswered Questions",
+        "Future Arcs"
+      ]
+    },
+    "prompts": [
+      "What unseen force quietly shapes the world's destiny?",
+      "Which region holds a secret that could rewrite history?",
+      "What resource is on the brink of collapse and why?",
+      "What contradiction defines this world's identity?"
+    ],
+    "filled": {},
+    "history": []
+  },
+  "511c4cac-7c74-471b-8049-9dab1384dec3": {
+    "id": "511c4cac-7c74-471b-8049-9dab1384dec3",
+    "template_type": "character",
+    "style": "Fantasy",
+    "sections": {
+      "Basic Info": [
+        "Name",
+        "Age/Era",
+        "Occupation/Role",
+        "Physical Description"
+      ],
+      "Core Identity": [
+        "Primary Motivation",
+        "Fatal Flaw",
+        "Greatest Fear",
+        "Defining Trait"
+      ],
+      "Background": [
+        "Origin Story",
+        "Formative Event",
+        "Relationships",
+        "Current Status"
+      ],
+      "Abilities": [
+        "Skills/Powers",
+        "Weaknesses",
+        "Equipment/Tools",
+        "Special Abilities"
+      ],
+      "Development": [
+        "Character Arc",
+        "Internal Conflict",
+        "External Conflict",
+        "Potential Endings"
+      ]
+    },
+    "prompts": [
+      "What secret does this character keep from everyone?",
+      "How would they react under extreme pressure?",
+      "What would they sacrifice everything for?",
+      "What's the one thing they refuse to do, no matter what?"
+    ],
+    "filled": {
+      "Basic Info": {
+        "Name": "Test Character"
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Basic Info": {
+            "Name": "Test Character"
+          }
+        }
+      },
+      {
+        "type": "finalize",
+        "preview_length": 782
+      }
+    ]
+  },
+  "fa43e9b3-da35-4197-9eb8-6cd384fc8d8b": {
+    "id": "fa43e9b3-da35-4197-9eb8-6cd384fc8d8b",
+    "template_type": "world",
+    "style": "Fantasy",
+    "sections": {
+      "Core Identity": [
+        "World Name",
+        "Central Theme",
+        "Tone/Atmosphere",
+        "Era/Timeline"
+      ],
+      "Geography": [
+        "Major Regions",
+        "Landforms",
+        "Climate Zones",
+        "Natural Wonders"
+      ],
+      "Cultures": [
+        "Dominant Cultures",
+        "Languages",
+        "Shared Traditions",
+        "Cultural Conflicts"
+      ],
+      "History & Myth": [
+        "Founding Event",
+        "Myths/Legends",
+        "Cataclysms",
+        "Turning Points"
+      ],
+      "Economy & Resources": [
+        "Key Resources",
+        "Trade Hubs",
+        "Scarce Commodities",
+        "Economic Tensions"
+      ],
+      "Magic / Technology": [
+        "Systems",
+        "Limitations",
+        "Unique Innovations",
+        "Forbidden Knowledge"
+      ],
+      "Factions & Power": [
+        "Major Factions",
+        "Power Balance",
+        "Hidden Influences",
+        "Emerging Threats"
+      ],
+      "Ecology": [
+        "Biome Types",
+        "Keystone Species",
+        "Environmental Pressures",
+        "Extinction Risks"
+      ],
+      "Conflicts & Tensions": [
+        "Active Conflicts",
+        "Rising Tensions",
+        "Moral Dilemmas",
+        "Imminent Crises"
+      ],
+      "Hooks": [
+        "Adventure Hooks",
+        "Mysteries",
+        "Unanswered Questions",
+        "Future Arcs"
+      ]
+    },
+    "prompts": [
+      "What unseen force quietly shapes the world's destiny?",
+      "Which region holds a secret that could rewrite history?",
+      "What resource is on the brink of collapse and why?",
+      "What contradiction defines this world's identity?"
+    ],
+    "filled": {},
+    "history": []
+  },
+  "4439bc5b-5579-4717-8393-ca60079166ae": {
+    "id": "4439bc5b-5579-4717-8393-ca60079166ae",
+    "template_type": "character",
+    "style": "Fantasy",
+    "sections": {
+      "Basic Info": [
+        "Name",
+        "Age/Era",
+        "Occupation/Role",
+        "Physical Description"
+      ],
+      "Core Identity": [
+        "Primary Motivation",
+        "Fatal Flaw",
+        "Greatest Fear",
+        "Defining Trait"
+      ],
+      "Background": [
+        "Origin Story",
+        "Formative Event",
+        "Relationships",
+        "Current Status"
+      ],
+      "Abilities": [
+        "Skills/Powers",
+        "Weaknesses",
+        "Equipment/Tools",
+        "Special Abilities"
+      ],
+      "Development": [
+        "Character Arc",
+        "Internal Conflict",
+        "External Conflict",
+        "Potential Endings"
+      ]
+    },
+    "prompts": [
+      "What secret does this character keep from everyone?",
+      "How would they react under extreme pressure?",
+      "What would they sacrifice everything for?",
+      "What's the one thing they refuse to do, no matter what?"
+    ],
+    "filled": {
+      "Basic Info": {
+        "Name": "Test Character"
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Basic Info": {
+            "Name": "Test Character"
+          }
+        }
+      },
+      {
+        "type": "finalize",
+        "preview_length": 782
+      }
+    ]
+  },
+  "bca4824d-c93a-41f6-b7b2-2245839ef48d": {
+    "id": "bca4824d-c93a-41f6-b7b2-2245839ef48d",
+    "template_type": "world",
+    "style": "Fantasy",
+    "sections": {
+      "Core Identity": [
+        "World Name",
+        "Central Theme",
+        "Tone/Atmosphere",
+        "Era/Timeline"
+      ],
+      "Geography": [
+        "Major Regions",
+        "Landforms",
+        "Climate Zones",
+        "Natural Wonders"
+      ],
+      "Cultures": [
+        "Dominant Cultures",
+        "Languages",
+        "Shared Traditions",
+        "Cultural Conflicts"
+      ],
+      "History & Myth": [
+        "Founding Event",
+        "Myths/Legends",
+        "Cataclysms",
+        "Turning Points"
+      ],
+      "Economy & Resources": [
+        "Key Resources",
+        "Trade Hubs",
+        "Scarce Commodities",
+        "Economic Tensions"
+      ],
+      "Magic / Technology": [
+        "Systems",
+        "Limitations",
+        "Unique Innovations",
+        "Forbidden Knowledge"
+      ],
+      "Factions & Power": [
+        "Major Factions",
+        "Power Balance",
+        "Hidden Influences",
+        "Emerging Threats"
+      ],
+      "Ecology": [
+        "Biome Types",
+        "Keystone Species",
+        "Environmental Pressures",
+        "Extinction Risks"
+      ],
+      "Conflicts & Tensions": [
+        "Active Conflicts",
+        "Rising Tensions",
+        "Moral Dilemmas",
+        "Imminent Crises"
+      ],
+      "Hooks": [
+        "Adventure Hooks",
+        "Mysteries",
+        "Unanswered Questions",
+        "Future Arcs"
+      ]
+    },
+    "prompts": [
+      "What unseen force quietly shapes the world's destiny?",
+      "Which region holds a secret that could rewrite history?",
+      "What resource is on the brink of collapse and why?",
+      "What contradiction defines this world's identity?"
+    ],
+    "filled": {},
+    "history": []
+  },
+  "b8b52c5b-66b6-4609-b35b-04ec3c711c18": {
+    "id": "b8b52c5b-66b6-4609-b35b-04ec3c711c18",
+    "template_type": "character",
+    "style": "Fantasy",
+    "sections": {
+      "Basic Info": [
+        "Name",
+        "Age/Era",
+        "Occupation/Role",
+        "Physical Description"
+      ],
+      "Core Identity": [
+        "Primary Motivation",
+        "Fatal Flaw",
+        "Greatest Fear",
+        "Defining Trait"
+      ],
+      "Background": [
+        "Origin Story",
+        "Formative Event",
+        "Relationships",
+        "Current Status"
+      ],
+      "Abilities": [
+        "Skills/Powers",
+        "Weaknesses",
+        "Equipment/Tools",
+        "Special Abilities"
+      ],
+      "Development": [
+        "Character Arc",
+        "Internal Conflict",
+        "External Conflict",
+        "Potential Endings"
+      ]
+    },
+    "prompts": [
+      "What secret does this character keep from everyone?",
+      "How would they react under extreme pressure?",
+      "What would they sacrifice everything for?",
+      "What's the one thing they refuse to do, no matter what?"
+    ],
+    "filled": {
+      "Basic Info": {
+        "Name": "Test Character"
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Basic Info": {
+            "Name": "Test Character"
+          }
+        }
+      },
+      {
+        "type": "finalize",
+        "preview_length": 782
+      }
+    ]
+  },
+  "b661d1a0-5d94-4ad1-89dc-b0d74ec764c1": {
+    "id": "b661d1a0-5d94-4ad1-89dc-b0d74ec764c1",
+    "template_type": "world",
+    "style": "Fantasy",
+    "sections": {
+      "Core Identity": [
+        "World Name",
+        "Central Theme",
+        "Tone/Atmosphere",
+        "Era/Timeline"
+      ],
+      "Geography": [
+        "Major Regions",
+        "Landforms",
+        "Climate Zones",
+        "Natural Wonders"
+      ],
+      "Cultures": [
+        "Dominant Cultures",
+        "Languages",
+        "Shared Traditions",
+        "Cultural Conflicts"
+      ],
+      "History & Myth": [
+        "Founding Event",
+        "Myths/Legends",
+        "Cataclysms",
+        "Turning Points"
+      ],
+      "Economy & Resources": [
+        "Key Resources",
+        "Trade Hubs",
+        "Scarce Commodities",
+        "Economic Tensions"
+      ],
+      "Magic / Technology": [
+        "Systems",
+        "Limitations",
+        "Unique Innovations",
+        "Forbidden Knowledge"
+      ],
+      "Factions & Power": [
+        "Major Factions",
+        "Power Balance",
+        "Hidden Influences",
+        "Emerging Threats"
+      ],
+      "Ecology": [
+        "Biome Types",
+        "Keystone Species",
+        "Environmental Pressures",
+        "Extinction Risks"
+      ],
+      "Conflicts & Tensions": [
+        "Active Conflicts",
+        "Rising Tensions",
+        "Moral Dilemmas",
+        "Imminent Crises"
+      ],
+      "Hooks": [
+        "Adventure Hooks",
+        "Mysteries",
+        "Unanswered Questions",
+        "Future Arcs"
+      ]
+    },
+    "prompts": [
+      "What unseen force quietly shapes the world's destiny?",
+      "Which region holds a secret that could rewrite history?",
+      "What resource is on the brink of collapse and why?",
+      "What contradiction defines this world's identity?"
+    ],
+    "filled": {},
+    "history": []
+  },
+  "f61a12c2-c289-4d79-a07d-325968242e88": {
+    "id": "f61a12c2-c289-4d79-a07d-325968242e88",
+    "template_type": "character",
+    "style": "Fantasy",
+    "sections": {
+      "Basic Info": [
+        "Name",
+        "Age/Era",
+        "Occupation/Role",
+        "Physical Description"
+      ],
+      "Core Identity": [
+        "Primary Motivation",
+        "Fatal Flaw",
+        "Greatest Fear",
+        "Defining Trait"
+      ],
+      "Background": [
+        "Origin Story",
+        "Formative Event",
+        "Relationships",
+        "Current Status"
+      ],
+      "Abilities": [
+        "Skills/Powers",
+        "Weaknesses",
+        "Equipment/Tools",
+        "Special Abilities"
+      ],
+      "Development": [
+        "Character Arc",
+        "Internal Conflict",
+        "External Conflict",
+        "Potential Endings"
+      ]
+    },
+    "prompts": [
+      "What secret does this character keep from everyone?",
+      "How would they react under extreme pressure?",
+      "What would they sacrifice everything for?",
+      "What's the one thing they refuse to do, no matter what?"
+    ],
+    "filled": {
+      "Basic Info": {
+        "Name": "Test Character"
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Basic Info": {
+            "Name": "Test Character"
+          }
+        }
+      },
+      {
+        "type": "finalize",
+        "preview_length": 782
+      }
+    ]
+  },
+  "7472ae31-d1a8-47c2-aa36-40d1b517b84b": {
+    "id": "7472ae31-d1a8-47c2-aa36-40d1b517b84b",
+    "template_type": "world",
+    "style": "Fantasy",
+    "sections": {
+      "Core Identity": [
+        "World Name",
+        "Central Theme",
+        "Tone/Atmosphere",
+        "Era/Timeline"
+      ],
+      "Geography": [
+        "Major Regions",
+        "Landforms",
+        "Climate Zones",
+        "Natural Wonders"
+      ],
+      "Cultures": [
+        "Dominant Cultures",
+        "Languages",
+        "Shared Traditions",
+        "Cultural Conflicts"
+      ],
+      "History & Myth": [
+        "Founding Event",
+        "Myths/Legends",
+        "Cataclysms",
+        "Turning Points"
+      ],
+      "Economy & Resources": [
+        "Key Resources",
+        "Trade Hubs",
+        "Scarce Commodities",
+        "Economic Tensions"
+      ],
+      "Magic / Technology": [
+        "Systems",
+        "Limitations",
+        "Unique Innovations",
+        "Forbidden Knowledge"
+      ],
+      "Factions & Power": [
+        "Major Factions",
+        "Power Balance",
+        "Hidden Influences",
+        "Emerging Threats"
+      ],
+      "Ecology": [
+        "Biome Types",
+        "Keystone Species",
+        "Environmental Pressures",
+        "Extinction Risks"
+      ],
+      "Conflicts & Tensions": [
+        "Active Conflicts",
+        "Rising Tensions",
+        "Moral Dilemmas",
+        "Imminent Crises"
+      ],
+      "Hooks": [
+        "Adventure Hooks",
+        "Mysteries",
+        "Unanswered Questions",
+        "Future Arcs"
+      ]
+    },
+    "prompts": [
+      "What unseen force quietly shapes the world's destiny?",
+      "Which region holds a secret that could rewrite history?",
+      "What resource is on the brink of collapse and why?",
+      "What contradiction defines this world's identity?"
+    ],
+    "filled": {},
+    "history": []
+  },
+  "a62bab6a-6ce5-42c7-834a-d1819dfd9fe3": {
+    "id": "a62bab6a-6ce5-42c7-834a-d1819dfd9fe3",
+    "template_type": "character",
+    "style": "Fantasy",
+    "sections": {
+      "Basic Info": [
+        "Name",
+        "Age/Era",
+        "Occupation/Role",
+        "Physical Description"
+      ],
+      "Core Identity": [
+        "Primary Motivation",
+        "Fatal Flaw",
+        "Greatest Fear",
+        "Defining Trait"
+      ],
+      "Background": [
+        "Origin Story",
+        "Formative Event",
+        "Relationships",
+        "Current Status"
+      ],
+      "Abilities": [
+        "Skills/Powers",
+        "Weaknesses",
+        "Equipment/Tools",
+        "Special Abilities"
+      ],
+      "Development": [
+        "Character Arc",
+        "Internal Conflict",
+        "External Conflict",
+        "Potential Endings"
+      ]
+    },
+    "prompts": [
+      "What secret does this character keep from everyone?",
+      "How would they react under extreme pressure?",
+      "What would they sacrifice everything for?",
+      "What's the one thing they refuse to do, no matter what?"
+    ],
+    "filled": {
+      "Basic Info": {
+        "Name": "Test Character"
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Basic Info": {
+            "Name": "Test Character"
+          }
+        }
+      },
+      {
+        "type": "finalize",
+        "preview_length": 782
+      }
+    ]
+  },
+  "0aeea76a-0987-4219-b65c-a0c0a1644c1c": {
+    "id": "0aeea76a-0987-4219-b65c-a0c0a1644c1c",
+    "template_type": "world",
+    "style": "Fantasy",
+    "sections": {
+      "Core Identity": [
+        "World Name",
+        "Central Theme",
+        "Tone/Atmosphere",
+        "Era/Timeline"
+      ],
+      "Geography": [
+        "Major Regions",
+        "Landforms",
+        "Climate Zones",
+        "Natural Wonders"
+      ],
+      "Cultures": [
+        "Dominant Cultures",
+        "Languages",
+        "Shared Traditions",
+        "Cultural Conflicts"
+      ],
+      "History & Myth": [
+        "Founding Event",
+        "Myths/Legends",
+        "Cataclysms",
+        "Turning Points"
+      ],
+      "Economy & Resources": [
+        "Key Resources",
+        "Trade Hubs",
+        "Scarce Commodities",
+        "Economic Tensions"
+      ],
+      "Magic / Technology": [
+        "Systems",
+        "Limitations",
+        "Unique Innovations",
+        "Forbidden Knowledge"
+      ],
+      "Factions & Power": [
+        "Major Factions",
+        "Power Balance",
+        "Hidden Influences",
+        "Emerging Threats"
+      ],
+      "Ecology": [
+        "Biome Types",
+        "Keystone Species",
+        "Environmental Pressures",
+        "Extinction Risks"
+      ],
+      "Conflicts & Tensions": [
+        "Active Conflicts",
+        "Rising Tensions",
+        "Moral Dilemmas",
+        "Imminent Crises"
+      ],
+      "Hooks": [
+        "Adventure Hooks",
+        "Mysteries",
+        "Unanswered Questions",
+        "Future Arcs"
+      ]
+    },
+    "prompts": [
+      "What unseen force quietly shapes the world's destiny?",
+      "Which region holds a secret that could rewrite history?",
+      "What resource is on the brink of collapse and why?",
+      "What contradiction defines this world's identity?"
+    ],
+    "filled": {},
+    "history": []
   }
 }

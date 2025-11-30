@@ -969,6 +969,18 @@ class CreationSessionFinalizeRequest(BaseModel):
 class CreationSessionListRequest(BaseModel):
     limit: int | None = Field(None, description="Optional max number of sessions to return.")
 
+class RoleplayStartRequest(BaseModel):
+    session_id: str | None = Field(None, description="Optional: existing character creation session id to derive persona from.")
+    character_name: str | None = Field(None, description="Optional: character name if no session provided.")
+    bio: str | None = Field(None, description="Optional: short bio/personality summary.")
+    style: str = Field(default="Fantasy", description="Optional roleplay style or tone (e.g., 'Fantasy', 'Noir', 'Sci-Fi').")
+    safety_guidelines: List[str] = Field(default=[
+        "Stay in character unless explicitly asked to step out.",
+        "Avoid explicit content; keep interactions PG-13.",
+        "Respect user boundaries; ask clarifying questions when needed.",
+        "Keep responses concise (2-4 paragraphs) unless asked for more.",
+    ], description="Optional guidelines to constrain roleplay behavior.")
+
 @app.post("/call/mythos_creation_session_start")
 def creation_session_start(req: CreationSessionStartRequest):
     templates = _build_templates()
@@ -1016,15 +1028,22 @@ def creation_session_update(req: CreationSessionUpdateRequest):
                     continue
             skipped_fields.append(f"Section '{section}' has non-dict value (got {type(fields).__name__}); expected {{field: value}} mapping.")
             continue
-        # Check if LLM sent field-level arrays incorrectly (common pattern)
-        # If a field value is an array but the field name matches a known section field, it's valid
-        # If the field name itself contains an array, the LLM sent the wrong structure
         fsec = filled.setdefault(section, {})
+        # Get valid field names for this section from template
+        valid_fields = session.get("sections", {}).get(section, [])
+        # Build a normalized lookup: strip spaces, lowercase for fuzzy matching
+        def normalize(s): return ''.join(s.lower().split())
+        field_map = {normalize(f): f for f in valid_fields}
+        
         for field, value in (fields or {}).items():
-            # Additional heuristic: if multiple fields in this section all have array values,
-            # and none of the field names are in the template, the LLM may have sent a flat list
-            # Just store as-is; validation already warned about structure
-            fsec[field] = value
+            # Try exact match first, then fuzzy match
+            matched_field = field if field in valid_fields else field_map.get(normalize(field))
+            if matched_field:
+                fsec[matched_field] = value
+            else:
+                # Unknown field; store with warning
+                fsec[field] = value
+                skipped_fields.append(f"Unknown field '{field}' in section '{section}' (stored anyway).")
     session["history"].append({"type": "update", "payload": req.updates})
     total_fields = sum(len(v) for v in session["sections"].values())
     # Count completed if value is a non-empty string OR a non-empty list
@@ -1037,6 +1056,7 @@ def creation_session_update(req: CreationSessionUpdateRequest):
         "session_id": req.session_id,
         "progress": {"completed_fields": completed, "total_fields": total_fields},
         "filled": filled,
+        "sections": session["sections"],
         "message": "Session updated."
     }
     if skipped_fields:
@@ -1105,3 +1125,77 @@ def creation_session_list(req: CreationSessionListRequest):
     if req.limit is not None:
         sessions = sessions[:req.limit]
     return {"active_world": ACTIVE_WORLD_NAME, "count": len(CREATION_SESSIONS), "sessions": [{"id": s["id"], "template_type": s["template_type"], "style": s["style"], "fields_filled": sum(len(v) for v in s.get("filled", {}).values())} for s in sessions]}
+
+@app.post("/call/mythos_roleplay_start")
+def mythos_roleplay_start(req: RoleplayStartRequest):
+    """Construct a roleplay persona prompt from a character session or provided fields."""
+    persona = {
+        "name": None,
+        "style": req.style,
+        "traits": [],
+        "background": [],
+    }
+    source = "fields"
+    if req.session_id:
+        session = CREATION_SESSIONS.get(req.session_id)
+        if not session:
+            raise HTTPException(status_code=404, detail="Session not found.")
+        if session.get("template_type") != "character":
+            raise HTTPException(status_code=400, detail="Roleplay requires a character session.")
+        filled = session.get("filled", {})
+        persona["name"] = filled.get("Basic Info", {}).get("Name")
+        # derive traits/background from common sections
+        core = filled.get("Core Identity", {})
+        background = filled.get("Background", {})
+        abilities = filled.get("Abilities", {})
+        dev = filled.get("Development", {})
+        def collect(sec):
+            items = []
+            for k, v in (sec or {}).items():
+                if isinstance(v, list):
+                    items.extend([str(x).strip() for x in v if str(x).strip()])
+                elif isinstance(v, str) and v.strip():
+                    items.append(v.strip())
+            return items
+        persona["traits"] = collect(core) + collect(abilities)
+        persona["background"] = collect(background) + collect(dev)
+        source = "session"
+    else:
+        persona["name"] = req.character_name
+        if req.bio:
+            persona["background"].append(req.bio.strip())
+
+    # Build prompt
+    name = persona["name"] or "Unnamed Character"
+    traits = persona["traits"] or ["curious", "resilient"]
+    background = persona["background"] or ["mysterious origins, seeking purpose"]
+    style = persona["style"]
+    lines = []
+    lines.append(f"You are {name}.")
+    lines.append(f"Style: {style} roleplay.")
+    lines.append("Core Traits:")
+    for t in traits[:8]:
+        lines.append(f"- {t}")
+    lines.append("Background Highlights:")
+    for b in background[:8]:
+        lines.append(f"- {b}")
+    lines.append("\nGuidelines:")
+    for g in req.safety_guidelines:
+        lines.append(f"- {g}")
+    lines.append("\nWhen responding:")
+    lines.append("- Speak in first person, present tense where natural.")
+    lines.append("- Offer sensory detail and inner thoughts lightly.")
+    lines.append("- End with a subtle hook or question to continue.")
+
+    system_prompt = "\n".join(lines)
+    return {
+        "source": source,
+        "persona": {
+            "name": name,
+            "style": style,
+            "traits": traits,
+            "background": background,
+        },
+        "instructions": system_prompt,
+        "message": "Use this as a system/assistant instruction for roleplay."
+    }

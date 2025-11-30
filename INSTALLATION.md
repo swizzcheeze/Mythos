@@ -34,11 +34,12 @@ node .\mcp-healthcheck.js
 Phases & expectations:
 1. Backend `/healthz` probe → `[OK] Backend /healthz reachable` (fast fail if container down)
 2. MCP `initialize` → protocol version `2024-10-07` reported
-3. `tools/list` → shows 18+ tools (count grows as features expand)
+3. `tools/list` → shows 19+ tools (count grows as features expand)
 4. Sample tool calls:
   - Single-framework analysis (semantic fields present)
   - Multi-framework composite (diversity metric)
   - Creation session lifecycle (start/update/finalize/list)
+  - Roleplay persona prompt from started character session
 
 Timeouts (defaults in script): `INIT_TIMEOUT_MS=4000`, `TOOLS_TIMEOUT_MS=4000`, `CALLS_TIMEOUT_MS=8000`.
 
@@ -160,6 +161,8 @@ Response fields of interest:
 
 #### Bridge (Node.js)
 - `MYTHOS_MCP_PROTOCOL`: MCP protocol version (default: `2024-10-07`)
+- `MYTHOS_SHOW_JSON`: When `1`, bridge outputs raw JSON (useful for healthcheck/CI). Default off.
+- `MYTHOS_COLOR`: When `0`, disables ANSI color in formatted output.
 
 ### Override Protocol Version
 

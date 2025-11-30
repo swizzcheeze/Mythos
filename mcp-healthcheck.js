@@ -157,6 +157,9 @@ function runHealthcheck() {
                 proc.stdin.write(JSON.stringify(finalizeReq)+'\n');
                 const listReq = { jsonrpc:'2.0', id:8, method:'tools/call', params:{ name:'mythos_creation_session_list', arguments:{} } };
                 proc.stdin.write(JSON.stringify(listReq)+'\n');
+                // Optional: roleplay persona generation from the same character session
+                const roleplayReq = { jsonrpc:'2.0', id:10, method:'tools/call', params:{ name:'mythos_roleplay_start', arguments:{ session_id: pendingSessionId } } };
+                proc.stdin.write(JSON.stringify(roleplayReq)+'\n');
               } else {
                 console.log('[WARN] session start missing session_id');
               }

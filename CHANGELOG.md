@@ -3,12 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-- Vector lore search (planned)
-- Session advisory heuristics (planned)
-- Export pipelines (Markdown world bible) (planned)
-
-## [1.0.0] - 2025-11-30
-### Added
+- New Feature: `mythos_roleplay_start` endpoint and bridge tool to generate persona prompts from character sessions or provided fields. Healthcheck invokes it after session start.
 - Multi-world support (`mythos_create_world`, `mythos_select_world`, `mythos_list_worlds`, `mythos_wipe_lore_db`).
 - Interactive creation sessions (start / update / get / finalize / list) with persistent JSON storage per world.
 - Composite multi-archetype blending (`mythos_multi_archetype_analysis`) with diversity tension metric.
