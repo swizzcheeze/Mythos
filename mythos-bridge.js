@@ -155,7 +155,7 @@ const tools = [
   },
   {
     name: 'mythos_creation_session_update',
-    description: 'Update fields for an active creation session; supports partial nested updates. IMPORTANT: updates MUST be structured as { "Section Name": { "Field Name": "value or array" } }. Example: { "Core Identity": { "World Name": "Eldoria" }, "Geography": { "Major Regions": ["The Wastes", "Silver Coast"] } }',
+    description: 'Update fields for an active creation session; supports partial nested updates. Structure: { "Section Name": { "Field Name": value } }. Example: { "Core Identity": { "World Name": "Eldoria", "Central Theme": "Light vs Shadow" }, "Geography": { "Major Regions": ["Wastes", "Coast"] } }. WRONG: { "History & Myth": ["value"] }. RIGHT: { "History & Myth": { "Founding Event": "value" } }.',
     inputSchema: {
       type: 'object',
       required: ['session_id', 'updates'],
@@ -163,9 +163,10 @@ const tools = [
         session_id: { type: 'string', description: 'Session identifier from start.' },
         updates: { 
           type: 'object', 
-          description: 'Nested object: { "Section Name": { "Field Name": value } } where value may be a string or an array of strings. Each section must map to an object of field-value pairs.',
+          description: 'Two-level nested structure ONLY: { "Section": { "Field": value } }. Each section key MUST map to an object (not array). Field values can be strings or arrays.',
           additionalProperties: {
             type: 'object',
+            description: 'Map of field names to values',
             additionalProperties: {}
           }
         }

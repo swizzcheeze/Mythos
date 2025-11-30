@@ -76,7 +76,7 @@ function probeBackendHealth(timeoutMs = 3000) {
 
 function runHealthcheck() {
   const bridgePath = require('path').resolve(__dirname, 'mythos-bridge.js');
-  const env = { ...process.env };
+  const env = { ...process.env, MYTHOS_SHOW_JSON: '1', MYTHOS_COLOR: '0' };
   // Allow override via env; defaults handled by bridge.
   const proc = spawn('node', [bridgePath], { stdio: ['pipe', 'pipe', 'pipe'], env });
 

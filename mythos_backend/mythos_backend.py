@@ -1004,7 +1004,17 @@ def creation_session_update(req: CreationSessionUpdateRequest):
     skipped_fields = []
     for section, fields in (req.updates or {}).items():
         if not isinstance(fields, dict):
-            skipped_fields.append(f"Section '{section}' has non-dict value; expected {{field: value}} mapping.")
+            # Auto-correct common LLM mistake: flatten array-as-section to first real section match
+            if isinstance(fields, list) and session["sections"].get(section):
+                # Model sent {"Section": [values]} instead of {"Section": {"Field": values}}
+                # Try to infer: if section has exactly 1 field, assign the array there
+                section_fields = session["sections"][section]
+                if len(section_fields) == 1:
+                    fsec = filled.setdefault(section, {})
+                    fsec[section_fields[0]] = fields
+                    skipped_fields.append(f"Auto-corrected: '{section}' array mapped to '{section_fields[0]}'.")
+                    continue
+            skipped_fields.append(f"Section '{section}' has non-dict value (got {type(fields).__name__}); expected {{field: value}} mapping.")
             continue
         fsec = filled.setdefault(section, {})
         for field, value in (fields or {}).items():
