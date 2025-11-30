@@ -48,6 +48,8 @@ jobs:
         working-directory: .
         env:
           MYTHOS_MCP_PROTOCOL: 2024-10-07
+          MYTHOS_SHOW_JSON: 1
+          MYTHOS_COLOR: 0
         run: |
           node mcp-healthcheck.js
 
