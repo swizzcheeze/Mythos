@@ -33,9 +33,16 @@ jobs:
       - name: Start FastAPI backend
         working-directory: mythos_backend
         run: |
-          python mythos_backend.py &
-          echo "Backend starting..."
-          sleep 5
+          uvicorn mythos_backend:app --host 127.0.0.1 --port 8001 &
+          echo "Backend starting via uvicorn..."
+          for i in {1..15}; do
+            if curl -sSf http://127.0.0.1:8001/healthz > /dev/null; then
+              echo "Backend healthy"; break;
+            fi
+            echo "Waiting for backend (attempt $i)...";
+            sleep 1;
+          done
+          curl -sSf http://127.0.0.1:8001/healthz > /dev/null || { echo "Backend failed to start"; exit 1; }
 
       - name: Run Healthcheck
         working-directory: .
