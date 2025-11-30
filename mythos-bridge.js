@@ -251,6 +251,133 @@ async function handleToolCall(toolName, args) {
   });
 }
 
+// --- Friendly Formatting Layer for Iterative Creation Sessions ---
+function formatSessionToolOutput(toolName, result, args) {
+  const showRaw = process.env.MYTHOS_SHOW_JSON === '1';
+  if (showRaw) {
+    return JSON.stringify(result, null, 2);
+  }
+  try {
+    if (toolName === 'mythos_creation_session_start') {
+      const { session_id, template_type, style, sections, creative_prompts } = result;
+      const sectionNames = Object.keys(sections);
+      const lines = [];
+      lines.push(`New ${template_type} creation session started (style: ${style}).`);
+      lines.push(`Session ID: ${session_id}`);
+      lines.push(`Sections (${sectionNames.length}): ${sectionNames.join(', ')}`);
+      lines.push('Prompts:');
+      for (const p of creative_prompts || []) lines.push(` • ${p}`);
+      lines.push('\nNext: populate fields with mythos_creation_session_update.' );
+      return lines.join('\n');
+    }
+    if (toolName === 'mythos_creation_session_update') {
+      const { session_id, progress, filled, message } = result;
+      const { completed_fields, total_fields } = progress || { completed_fields: 0, total_fields: 0 };
+      // Show only recently updated sections (from args.updates)
+      const updatedSections = Object.keys(args.updates || {});
+      const lines = [];
+      lines.push(`${message} (Session: ${session_id})`);
+      lines.push(`Progress: ${completed_fields}/${total_fields} fields filled (${Math.round(((completed_fields||0)/(total_fields||1))*100)}%)`);
+      for (const sec of updatedSections) {
+        lines.push(`\n${sec}:`);
+        const fields = args.updates[sec];
+        for (const field of Object.keys(fields || {})) {
+          const val = filled?.[sec]?.[field];
+          if (Array.isArray(val)) {
+            lines.push(` - ${field}:`);
+            for (const item of val) lines.push(`    • ${item}`);
+          } else if (typeof val === 'string') {
+            // Expand semicolon list into bullets for readability
+            if (val.includes(';')) {
+              const parts = val.split(';').map(p => p.trim()).filter(Boolean);
+              if (parts.length > 1) {
+                lines.push(` - ${field}:`);
+                for (const part of parts) lines.push(`    • ${part}`);
+              } else {
+                lines.push(` - ${field}: ${val.trim()}`);
+              }
+            } else {
+              lines.push(` - ${field}: ${val.trim()}`);
+            }
+          } else {
+            lines.push(` - ${field}: (empty)`);
+          }
+        }
+      }
+      lines.push('\nUse get to view full session or finalize when ready.');
+      return lines.join('\n');
+    }
+    if (toolName === 'mythos_creation_session_get') {
+      const { id, template_type, style, sections, filled, prompts } = result;
+      const lines = [];
+      lines.push(`Session ${id} | Type: ${template_type} | Style: ${style}`);
+      // Determine completion stats
+      let total = 0, done = 0;
+      for (const sec of Object.keys(sections||{})) {
+        total += sections[sec].length;
+        for (const field of sections[sec]) {
+          const val = filled?.[sec]?.[field];
+          if ((Array.isArray(val) && val.some(v => String(v).trim())) || (typeof val === 'string' && val.trim())) done++;
+        }
+      }
+      lines.push(`Progress: ${done}/${total} (${Math.round((done/(total||1))*100)}%)`);
+      for (const sec of Object.keys(sections||{})) {
+        lines.push(`\n${sec}:`);
+        for (const field of sections[sec]) {
+          const val = filled?.[sec]?.[field];
+          if (Array.isArray(val)) {
+            if (val.length) {
+              lines.push(` - ${field}:`);
+              for (const item of val) lines.push(`    • ${item}`);
+            } else {
+              lines.push(` - ${field}: [ ]`);
+            }
+          } else if (typeof val === 'string' && val.trim()) {
+            if (val.includes(';')) {
+              const parts = val.split(';').map(p => p.trim()).filter(Boolean);
+              if (parts.length > 1) {
+                lines.push(` - ${field}:`);
+                for (const part of parts) lines.push(`    • ${part}`);
+              } else {
+                lines.push(` - ${field}: ${val.trim()}`);
+              }
+            } else {
+              lines.push(` - ${field}: ${val.trim()}`);
+            }
+          } else {
+            lines.push(` - ${field}: [ ]`);
+          }
+        }
+      }
+      if (prompts?.length) {
+        lines.push('\nPrompts:');
+        for (const p of prompts) lines.push(` • ${p}`);
+      }
+      lines.push('\nUse update to add more details or finalize for preview.');
+      return lines.join('\n');
+    }
+    if (toolName === 'mythos_creation_session_finalize') {
+      const { preview, proposed_entry } = result;
+      const lines = [];
+      lines.push('Finalize Preview (ready to save via create lore entry):');
+      lines.push('');
+      // Preview already preformatted by backend
+      lines.push(preview.trim());
+      if (proposed_entry) {
+        lines.push('\nSuggested Topic: ' + proposed_entry.topic);
+        lines.push('Suggested Tags: ' + (proposed_entry.tags || []).join(', '));
+      }
+      lines.push('\nIf satisfied: call mythos_create_lore_entry with proposed_entry details.');
+      return lines.join('\n');
+    }
+    // Non-session tools: fall back to JSON text
+    return JSON.stringify(result, null, 2);
+  } catch (e) {
+    // Fallback safety
+    return JSON.stringify(result, null, 2);
+  }
+}
+
 // === MCP Stdio Protocol Implementation ===
 // Allow overriding the MCP protocol via env; default to a widely supported version.
 const MCP_PROTOCOL_VERSION = process.env.MYTHOS_MCP_PROTOCOL || '2024-10-07';
@@ -278,11 +405,11 @@ process.stdin.on('data', async (chunk) => {
       } else if (request.method === 'tools/call') {
         try {
           const result = await handleToolCall(request.params.name, request.params.arguments || {});
-          // The result must be wrapped to conform to the MCP result structure
+          const formatted = formatSessionToolOutput(request.params.name, result, request.params.arguments || {});
           process.stdout.write(JSON.stringify({
             jsonrpc: '2.0',
             id: request.id,
-            result: { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] }
+            result: { content: [{ type: 'text', text: formatted }] }
           }) + '\n');
         } catch (err) {
           // Return an error tied to the request id rather than throwing a parse error
