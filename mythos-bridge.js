@@ -155,13 +155,20 @@ const tools = [
   },
   {
     name: 'mythos_creation_session_update',
-    description: 'Update fields for an active creation session; supports partial nested updates.',
+    description: 'Update fields for an active creation session; supports partial nested updates. IMPORTANT: updates MUST be structured as { "Section Name": { "Field Name": "value or array" } }. Example: { "Core Identity": { "World Name": "Eldoria" }, "Geography": { "Major Regions": ["The Wastes", "Silver Coast"] } }',
     inputSchema: {
       type: 'object',
       required: ['session_id', 'updates'],
       properties: {
         session_id: { type: 'string', description: 'Session identifier from start.' },
-        updates: { type: 'object', description: 'Nested object: { section: { field: value } } where value may be a string or an array of strings.' }
+        updates: { 
+          type: 'object', 
+          description: 'Nested object: { "Section Name": { "Field Name": value } } where value may be a string or an array of strings. Each section must map to an object of field-value pairs.',
+          additionalProperties: {
+            type: 'object',
+            additionalProperties: {}
+          }
+        }
       }
     }
   },

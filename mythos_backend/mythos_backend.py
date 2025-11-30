@@ -1001,7 +1001,11 @@ def creation_session_update(req: CreationSessionUpdateRequest):
     if not session:
         raise HTTPException(status_code=404, detail="Session not found.")
     filled = session.setdefault("filled", {})
+    skipped_fields = []
     for section, fields in (req.updates or {}).items():
+        if not isinstance(fields, dict):
+            skipped_fields.append(f"Section '{section}' has non-dict value; expected {{field: value}} mapping.")
+            continue
         fsec = filled.setdefault(section, {})
         for field, value in (fields or {}).items():
             # Preserve lists; store strings directly
@@ -1014,12 +1018,16 @@ def creation_session_update(req: CreationSessionUpdateRequest):
         if (isinstance(v, str) and v.strip()) or (isinstance(v, list) and any(str(x).strip() for x in v))
     )
     save_sessions(CREATION_SESSIONS)
-    return {
+    resp = {
         "session_id": req.session_id,
         "progress": {"completed_fields": completed, "total_fields": total_fields},
         "filled": filled,
         "message": "Session updated."
     }
+    if skipped_fields:
+        resp["warnings"] = skipped_fields
+        resp["hint"] = "Ensure updates structure is { 'Section Name': { 'Field Name': 'value or [array]' } }"
+    return resp
 
 @app.post("/call/mythos_creation_session_get")
 def creation_session_get(req: CreationSessionGetRequest):
