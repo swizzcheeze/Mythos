@@ -953,7 +953,10 @@ class CreationSessionStartRequest(BaseModel):
 
 class CreationSessionUpdateRequest(BaseModel):
     session_id: str = Field(..., description="ID returned by session start.")
-    updates: Dict[str, Dict[str, str]] = Field(..., description="Nested dict of {section: {field: value}} to merge.")
+    updates: Dict[str, Dict[str, Any]] = Field(
+        ..., 
+        description="Nested dict of {section: {field: value}}. Values may be string or list of strings; lists will be joined with '; '."
+    )
 
 class CreationSessionGetRequest(BaseModel):
     session_id: str = Field(..., description="ID returned by session start.")
@@ -1001,10 +1004,14 @@ def creation_session_update(req: CreationSessionUpdateRequest):
     for section, fields in (req.updates or {}).items():
         fsec = filled.setdefault(section, {})
         for field, value in (fields or {}).items():
+            # Normalize list values to a semicolon-separated string for consistency
+            if isinstance(value, list):
+                value = "; ".join(str(v) for v in value if str(v).strip())
             fsec[field] = value
     session["history"].append({"type": "update", "payload": req.updates})
     total_fields = sum(len(v) for v in session["sections"].values())
-    completed = sum(1 for s, fs in filled.items() for k, v in fs.items() if v and isinstance(v, str) and v.strip())
+    # Count completed if value is a non-empty string after normalization
+    completed = sum(1 for s, fs in filled.items() for k, v in fs.items() if isinstance(v, str) and v.strip())
     save_sessions(CREATION_SESSIONS)
     return {
         "session_id": req.session_id,

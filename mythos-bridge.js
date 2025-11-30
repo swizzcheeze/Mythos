@@ -161,7 +161,7 @@ const tools = [
       required: ['session_id', 'updates'],
       properties: {
         session_id: { type: 'string', description: 'Session identifier from start.' },
-        updates: { type: 'object', description: 'Nested object: { section: { field: value } }' }
+        updates: { type: 'object', description: 'Nested object: { section: { field: value } } where value may be a string or an array of strings.' }
       }
     }
   },
