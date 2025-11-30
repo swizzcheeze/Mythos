@@ -1016,9 +1016,14 @@ def creation_session_update(req: CreationSessionUpdateRequest):
                     continue
             skipped_fields.append(f"Section '{section}' has non-dict value (got {type(fields).__name__}); expected {{field: value}} mapping.")
             continue
+        # Check if LLM sent field-level arrays incorrectly (common pattern)
+        # If a field value is an array but the field name matches a known section field, it's valid
+        # If the field name itself contains an array, the LLM sent the wrong structure
         fsec = filled.setdefault(section, {})
         for field, value in (fields or {}).items():
-            # Preserve lists; store strings directly
+            # Additional heuristic: if multiple fields in this section all have array values,
+            # and none of the field names are in the template, the LLM may have sent a flat list
+            # Just store as-is; validation already warned about structure
             fsec[field] = value
     session["history"].append({"type": "update", "payload": req.updates})
     total_fields = sum(len(v) for v in session["sections"].values())

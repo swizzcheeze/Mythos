@@ -163,12 +163,7 @@ const tools = [
         session_id: { type: 'string', description: 'Session identifier from start.' },
         updates: { 
           type: 'object', 
-          description: 'Two-level nested structure ONLY: { "Section": { "Field": value } }. Each section key MUST map to an object (not array). Field values can be strings or arrays.',
-          additionalProperties: {
-            type: 'object',
-            description: 'Map of field names to values',
-            additionalProperties: {}
-          }
+          description: 'Two-level nested structure: { "Section": { "Field": value } }. Each section maps to an object. Field values can be strings or arrays.'
         }
       }
     }
