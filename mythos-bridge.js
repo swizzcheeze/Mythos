@@ -254,6 +254,46 @@ async function handleToolCall(toolName, args) {
 // --- Friendly Formatting Layer for Iterative Creation Sessions ---
 function formatSessionToolOutput(toolName, result, args) {
   const showRaw = process.env.MYTHOS_SHOW_JSON === '1';
+  const enableColor = process.env.MYTHOS_COLOR !== '0';
+  const colors = enableColor ? {
+    green: '\u001b[32m',
+    yellow: '\u001b[33m',
+    red: '\u001b[31m',
+    cyan: '\u001b[36m',
+    magenta: '\u001b[35m',
+    reset: '\u001b[0m'
+  } : { green:'', yellow:'', red:'', cyan:'', magenta:'', reset:'' };
+  function colorizePct(pct) {
+    if (!enableColor) return pct + '%';
+    if (pct >= 80) return colors.green + pct + '%' + colors.reset;
+    if (pct >= 40) return colors.yellow + pct + '%' + colors.reset;
+    return colors.red + pct + '%' + colors.reset;
+  }
+  function sectionStats(sections, filled) {
+    const lines = [];
+    for (const sec of Object.keys(sections||{})) {
+      const total = sections[sec].length;
+      let done = 0;
+      for (const field of sections[sec]) {
+        const val = filled?.[sec]?.[field];
+        if ((Array.isArray(val) && val.some(v => String(v).trim())) || (typeof val === 'string' && val.trim())) done++;
+      }
+      const pct = total ? Math.round((done/total)*100) : 0;
+      lines.push(` • ${sec}: ${done}/${total} (${colorizePct(pct)})`);
+    }
+    return lines;
+  }
+  function remainingGlobal(sections, filled) {
+    let total = 0, done = 0;
+    for (const sec of Object.keys(sections||{})) {
+      total += sections[sec].length;
+      for (const field of sections[sec]) {
+        const val = filled?.[sec]?.[field];
+        if ((Array.isArray(val) && val.some(v => String(v).trim())) || (typeof val === 'string' && val.trim())) done++;
+      }
+    }
+    return { total, done, remaining: total - done, pct: total ? Math.round((done/total)*100) : 0 };
+  }
   if (showRaw) {
     return JSON.stringify(result, null, 2);
   }
@@ -267,6 +307,8 @@ function formatSessionToolOutput(toolName, result, args) {
       lines.push(`Sections (${sectionNames.length}): ${sectionNames.join(', ')}`);
       lines.push('Prompts:');
       for (const p of creative_prompts || []) lines.push(` • ${p}`);
+      lines.push('\nSection Progress (initial):');
+      lines.push(...sectionStats(sections, {}));
       lines.push('\nNext: populate fields with mythos_creation_session_update.' );
       return lines.join('\n');
     }
@@ -277,7 +319,8 @@ function formatSessionToolOutput(toolName, result, args) {
       const updatedSections = Object.keys(args.updates || {});
       const lines = [];
       lines.push(`${message} (Session: ${session_id})`);
-      lines.push(`Progress: ${completed_fields}/${total_fields} fields filled (${Math.round(((completed_fields||0)/(total_fields||1))*100)}%)`);
+      const pct = total_fields ? Math.round(((completed_fields||0)/(total_fields))*100) : 0;
+      lines.push(`Progress: ${completed_fields}/${total_fields} fields filled (${colorizePct(pct)})`);
       for (const sec of updatedSections) {
         lines.push(`\n${sec}:`);
         const fields = args.updates[sec];
@@ -304,6 +347,11 @@ function formatSessionToolOutput(toolName, result, args) {
           }
         }
       }
+      // Global remaining summary
+      const stats = remainingGlobal(result.filled ? result.sections || {} : result.sections || {}, filled);
+      lines.push(`\nRemaining fields: ${stats.remaining} of ${stats.total}`);
+      lines.push('Per-section progress:');
+      lines.push(...sectionStats(result.sections || {}, filled));
       lines.push('\nUse get to view full session or finalize when ready.');
       return lines.join('\n');
     }
@@ -320,7 +368,10 @@ function formatSessionToolOutput(toolName, result, args) {
           if ((Array.isArray(val) && val.some(v => String(v).trim())) || (typeof val === 'string' && val.trim())) done++;
         }
       }
-      lines.push(`Progress: ${done}/${total} (${Math.round((done/(total||1))*100)}%)`);
+      const pct = total ? Math.round((done/total)*100) : 0;
+      lines.push(`Progress: ${done}/${total} (${colorizePct(pct)})`);
+      lines.push('Per-section progress:');
+      lines.push(...sectionStats(sections, filled));
       for (const sec of Object.keys(sections||{})) {
         lines.push(`\n${sec}:`);
         for (const field of sections[sec]) {
@@ -353,6 +404,8 @@ function formatSessionToolOutput(toolName, result, args) {
         lines.push('\nPrompts:');
         for (const p of prompts) lines.push(` • ${p}`);
       }
+      const stats = remainingGlobal(sections, filled);
+      lines.push(`\nRemaining fields: ${stats.remaining}`);
       lines.push('\nUse update to add more details or finalize for preview.');
       return lines.join('\n');
     }
@@ -367,6 +420,9 @@ function formatSessionToolOutput(toolName, result, args) {
         lines.push('\nSuggested Topic: ' + proposed_entry.topic);
         lines.push('Suggested Tags: ' + (proposed_entry.tags || []).join(', '));
       }
+      // Quick remaining summary extracted from preview by counting '[ ]'
+      const emptyCount = preview.split('\n').filter(l => /\[ \]/.test(l)).length;
+      lines.push(`\nEmpty slots remaining: ${emptyCount}`);
       lines.push('\nIf satisfied: call mythos_create_lore_entry with proposed_entry details.');
       return lines.join('\n');
     }
