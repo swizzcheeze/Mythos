@@ -178,6 +178,37 @@ mythos/
 
 ---
 
+## 🎭 Roleplay Usage
+
+- Purpose: Generate a persona prompt and instructions to roleplay as your character.
+
+- HTTP (backend directly):
+  ```powershell
+  # From a character session
+  $body = @{ session_id = 'YOUR_SESSION_ID' } | ConvertTo-Json
+  Invoke-RestMethod -Uri "http://localhost:8001/call/mythos_roleplay_start" -Method Post -Body $body -ContentType "application/json"
+
+  # Without a session (name + bio)
+  $body = @{ character_name = 'Seren Valis'; bio = 'Quiet scholar of forbidden runes.'; style = 'Fantasy' } | ConvertTo-Json
+  Invoke-RestMethod -Uri "http://localhost:8001/call/mythos_roleplay_start" -Method Post -Body $body -ContentType "application/json"
+  ```
+
+- MCP Bridge (LM Studio):
+  - Call the tool `mythos_roleplay_start` with either:
+    - `session_id` from a `character` creation session, or
+    - `character_name` + optional `bio` and `style`.
+  - The bridge shows a friendly formatted view by default; set `MYTHOS_SHOW_JSON=1` to receive raw JSON.
+
+- Output structure:
+  - `persona`: `{ name, style, traits[], background[] }`
+  - `instructions`: prompt text suitable as a system/assistant instruction
+
+Tips
+- Keep responses concise by default; ask for longer outputs when needed.
+- Adjust `style` (e.g., Noir, Sci-Fi) for tone changes.
+
+---
+
 ## 🔄 Workflow Examples
 **Interactive Creation Session**
 1. `mythos_creation_session_start` (template_type="character")
