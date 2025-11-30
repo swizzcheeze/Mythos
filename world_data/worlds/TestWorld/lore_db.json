@@ -1,0 +1,28 @@
+[
+  {
+    "topic": "Test Lore Entry",
+    "content": "Initial content for TestWorld lore entry",
+    "tags": [
+      "test",
+      "world"
+    ],
+    "id": 1
+  },
+  {
+    "topic": "Second Lore Entry",
+    "content": "Second content",
+    "tags": [
+      "test"
+    ],
+    "id": 2
+  },
+  {
+    "topic": "Third Lore Updated",
+    "content": "Third content expanded",
+    "tags": [
+      "alpha",
+      "updated"
+    ],
+    "id": 3
+  }
+]

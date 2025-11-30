@@ -1,0 +1,26 @@
+services:
+  # --- Mythos World Engine (Self-Contained) ---
+  mythos_backend:
+    build:
+      context: ./mythos_backend
+      dockerfile: Dockerfile
+    container_name: mythos_backend
+    ports: 
+      - "8001:8001" # Exposing on port 8001
+    volumes:
+      - ./mythos_backend:/app 
+      # Volume for persistent lore data: maps D:\mythos\world_data on the host to /app/world_data in the container
+      # This ensures the lore_db.json file persists across container restarts.
+      - ./world_data:/app/world_data
+    working_dir: /app
+    environment:
+      - LORE_DB_PATH=/app/world_data/lore_db.json
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://127.0.0.1:8001/healthz', timeout=2).status==200 else sys.exit(1)\""]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+# No volumes section needed since there are no named volumes (like db_data)
+# All volumes are host-path mounts for persistence.
