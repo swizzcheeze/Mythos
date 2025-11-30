@@ -955,7 +955,7 @@ class CreationSessionUpdateRequest(BaseModel):
     session_id: str = Field(..., description="ID returned by session start.")
     updates: Dict[str, Dict[str, Any]] = Field(
         ..., 
-        description="Nested dict of {section: {field: value}}. Values may be string or list of strings; lists will be joined with '; '."
+        description="Nested dict of {section: {field: value}}. Values may be string or list of strings; lists are preserved and rendered as bullets in finalize output."
     )
 
 class CreationSessionGetRequest(BaseModel):
@@ -1004,14 +1004,15 @@ def creation_session_update(req: CreationSessionUpdateRequest):
     for section, fields in (req.updates or {}).items():
         fsec = filled.setdefault(section, {})
         for field, value in (fields or {}).items():
-            # Normalize list values to a semicolon-separated string for consistency
-            if isinstance(value, list):
-                value = "; ".join(str(v) for v in value if str(v).strip())
+            # Preserve lists; store strings directly
             fsec[field] = value
     session["history"].append({"type": "update", "payload": req.updates})
     total_fields = sum(len(v) for v in session["sections"].values())
-    # Count completed if value is a non-empty string after normalization
-    completed = sum(1 for s, fs in filled.items() for k, v in fs.items() if isinstance(v, str) and v.strip())
+    # Count completed if value is a non-empty string OR a non-empty list
+    completed = sum(
+        1 for s, fs in filled.items() for k, v in fs.items()
+        if (isinstance(v, str) and v.strip()) or (isinstance(v, list) and any(str(x).strip() for x in v))
+    )
     save_sessions(CREATION_SESSIONS)
     return {
         "session_id": req.session_id,
@@ -1037,7 +1038,28 @@ def creation_session_finalize(req: CreationSessionFinalizeRequest):
         lines.append(f"\n## {section}")
         for field in fields:
             val = session.get("filled", {}).get(section, {}).get(field)
-            lines.append(f"- {field}: {val if (val and str(val).strip()) else '[ ]'}")
+            if isinstance(val, list):
+                cleaned = [str(v).strip() for v in val if str(v).strip()]
+                if cleaned:
+                    lines.append(f"- {field}:")
+                    for item in cleaned:
+                        lines.append(f"  - {item}")
+                else:
+                    lines.append(f"- {field}: [ ]")
+            elif isinstance(val, str):
+                # Detect semicolon-delimited legacy multi-entry strings and expand
+                if ';' in val and any(part.strip() for part in val.split(';')):
+                    parts = [p.strip() for p in val.split(';') if p.strip()]
+                    if len(parts) > 1:
+                        lines.append(f"- {field}:")
+                        for item in parts:
+                            lines.append(f"  - {item}")
+                    else:
+                        lines.append(f"- {field}: {parts[0] if parts else '[ ]'}")
+                else:
+                    lines.append(f"- {field}: {val.strip() if val.strip() else '[ ]'}")
+            else:
+                lines.append(f"- {field}: [ ]")
     lines.append("\n-- Creative Prompts --")
     for p in session["prompts"]:
         lines.append(f"- {p}")
