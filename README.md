@@ -224,6 +224,63 @@ Tips
   - Protocol mismatch → enforce `2024-10-07`.
 - Artifacts: Optionally archive healthcheck console output and backend logs to aid debugging.
 
+### Example GitHub Actions `ci.yml`
+```yaml
+name: CI Healthcheck
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  healthcheck:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install backend deps
+        working-directory: mythos_backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Start backend (uvicorn)
+        run: |
+          nohup python -m uvicorn mythos_backend:app --host 127.0.0.1 --port 8001 &
+          for i in {1..40}; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8001/healthz || true);
+            if [ "$code" = "200" ]; then echo "backend ready"; break; fi; sleep 0.2;
+          done
+
+      - name: Run MCP healthcheck
+        env:
+          MYTHOS_MCP_PROTOCOL: '2024-10-07'
+          MYTHOS_SHOW_JSON: '1'
+          MYTHOS_COLOR: '0'
+        run: node ./mcp-healthcheck.js
+
+      - name: Archive logs (optional)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: healthcheck-logs
+          path: |
+            **/*.log
+            world_data/**/*.json
+```
+
 ---
 
 ## 🔄 Workflow Examples
