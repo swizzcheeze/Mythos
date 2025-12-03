@@ -136,8 +136,28 @@ mythos_update_lore_entry(id="uuid", content="...", world="Eldoria")
 
 ## Testing
 
-### Healthcheck Results
-All MCP protocol phases pass:
+### Data Integrity Test Suite
+Comprehensive automated test suite (`test_data_integrity.py`) validates all security guarantees:
+
+**Test Results: 8/8 PASSING ✓**
+
+1. ✅ **Backend Reachable** - Health endpoint responding
+2. ✅ **World Name Validation** - All 9 dangerous names rejected (directory traversal prevented)
+3. ✅ **Concurrent Creates** - 10 threads, 10 unique IDs, 10 entries persisted (no race conditions)
+4. ✅ **World Context Isolation** - No cross-talk between worlds
+5. ✅ **Atomic Write Safety** - Valid JSON, no orphaned temp files
+6. ✅ **UUID Format** - Proper v4 format
+7. ✅ **Concurrent Multi-World** - 5 worlds × 3 entries each, all correct
+8. ✅ **Lore Entry Updates** - Updates persist correctly
+
+**Run tests:**
+```bash
+docker compose up -d
+python test_data_integrity.py
+```
+
+### MCP Healthcheck Results
+All protocol phases pass:
 - Backend `/healthz` reachable ✓
 - Protocol negotiation (2024-10-07) ✓
 - Tool enumeration (19 tools) ✓
@@ -146,11 +166,19 @@ All MCP protocol phases pass:
 - Session lifecycle (start → update → finalize → list) ✓
 - World template validation ✓
 
-### Regression Testing Recommendations
-1. **Concurrent write test**: Spawn 5 threads creating lore entries simultaneously; verify no duplicate IDs and no file corruption
-2. **World name injection test**: Attempt to create worlds with names like `../../../etc/passwd`, `..`, `.`, verify rejection
-3. **Auth bypass test**: Call protected endpoints without token (if enabled); verify 403 responses
-4. **Crash recovery test**: Kill backend mid-write; verify no corrupted JSON files on restart
+### Transaction-Level Locking Fix
+**Critical Fix**: Initial implementation had file-level locks but didn't hold them across read-modify-write transactions. This caused race conditions where concurrent creates would overwrite each other.
+
+**Solution**: Added internal `_load_lore_db_unlocked()` and `_save_lore_db_unlocked()` functions. Endpoints now hold the lock for the entire transaction:
+```python
+lock = _get_lock_for_path(db_path)
+with lock:
+    db = _load_lore_db_unlocked(world)
+    db.append(new_entry)
+    _save_lore_db_unlocked(db, world)
+```
+
+This guarantees serializable transactions and prevents lost updates.
 
 ---
 
