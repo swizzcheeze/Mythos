@@ -2,15 +2,48 @@ import json
 import random
 import os
 import uuid
+import re
+import threading
+import tempfile
 from typing import List, Dict, Any
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import FastAPI, HTTPException, Header
+from pydantic import BaseModel, Field, field_validator
 
 # --- Configuration & State ---
 # Path defined by Docker Compose to point to the host volume mount for persistence
 # Keeping backward-compat: default world uses this exact path/file
 LORE_DB_BASE_PATH = os.getenv("LORE_DB_PATH", "world_data/lore_db.json")
 ACTIVE_WORLD_NAME = "default"
+
+# Optional admin token for destructive operations (if not set, auth is disabled)
+ADMIN_TOKEN = os.getenv("MYTHOS_ADMIN_TOKEN", None)
+
+# Thread-safe locks for file operations
+_file_locks: Dict[str, threading.Lock] = {}
+_file_locks_lock = threading.Lock()
+
+def _get_lock_for_path(path: str) -> threading.Lock:
+    """Get or create a lock for a specific file path."""
+    with _file_locks_lock:
+        if path not in _file_locks:
+            _file_locks[path] = threading.Lock()
+        return _file_locks[path]
+
+def _validate_world_name(name: str) -> str:
+    """Validate and sanitize world name to prevent directory traversal."""
+    if not name or not isinstance(name, str):
+        raise ValueError("World name must be a non-empty string")
+    # Allow only alphanumeric, underscore, hyphen; max 64 chars
+    if not re.fullmatch(r'[A-Za-z0-9_-]{1,64}', name):
+        raise ValueError("World name must be 1-64 characters: letters, numbers, underscore, or hyphen only")
+    return name
+
+def _check_admin_auth(x_admin_token: str | None = None) -> None:
+    """Validate admin token if MYTHOS_ADMIN_TOKEN is set."""
+    if ADMIN_TOKEN is None:
+        return  # Auth disabled
+    if x_admin_token != ADMIN_TOKEN:
+        raise HTTPException(status_code=403, detail="Forbidden: invalid or missing admin token")
 
 def _current_db_path() -> str:
     """Return the active world's lore DB file path.
@@ -158,25 +191,39 @@ ARCHETYPE_DEFINITIONS = {
 }
 
 def load_lore_db() -> List[Dict[str, Any]]:
-    """Loads the lore database from a persistent JSON file."""
-    # Ensure the directory exists before trying to load/save
+    """Loads the lore database from a persistent JSON file with thread safety."""
     db_path = _current_db_path()
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
-    try:
-        with open(db_path, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return []
-    except json.JSONDecodeError:
-        print(f"Warning: {db_path} is corrupted. Starting with empty database.")
-        return []
+    
+    lock = _get_lock_for_path(db_path)
+    with lock:
+        try:
+            with open(db_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except FileNotFoundError:
+            return []
+        except json.JSONDecodeError:
+            print(f"Warning: {db_path} is corrupted. Starting with empty database.")
+            return []
 
 def save_lore_db(db: List[Dict[str, Any]]):
-    """Saves the lore database to a local JSON file for persistence."""
+    """Atomically saves the lore database using temp file + rename for crash safety."""
     db_path = _current_db_path()
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
-    with open(db_path, 'w', encoding='utf-8') as f:
-        json.dump(db, f, indent=2, ensure_ascii=False)
+    
+    lock = _get_lock_for_path(db_path)
+    with lock:
+        # Write to temp file in same directory, then atomic rename
+        dir_path = os.path.dirname(db_path)
+        with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', 
+                                          dir=dir_path, delete=False, 
+                                          suffix='.tmp') as tmp:
+            json.dump(db, tmp, indent=2, ensure_ascii=False)
+            tmp.flush()
+            os.fsync(tmp.fileno())
+            tmp_path = tmp.name
+        # Atomic rename (POSIX) or best-effort on Windows
+        os.replace(tmp_path, db_path)
 
 # Initialize database
 LORE_DATABASE = load_lore_db()
@@ -243,7 +290,7 @@ class CreationModeRequest(BaseModel):
     style: str = Field(default="Fantasy", description="Creative style/genre for the template (e.g., 'Fantasy', 'Sci-Fi', 'Horror', 'Cyberpunk').")
 
 class LoreUpdateRequest(BaseModel):
-    id: int = Field(..., description="Existing lore entry ID to update.")
+    id: str = Field(..., description="Existing lore entry ID to update (UUID string).")
     topic: str | None = Field(None, description="Updated title (optional).")
     content: str | None = Field(None, description="Updated content (optional).")
     tags: List[str] | None = Field(None, description="Updated tags (optional).")
@@ -252,12 +299,24 @@ class WipeRequest(BaseModel):
     confirm: str = Field(..., description="Type 'CONFIRM' to irreversibly wipe the current world's database.")
 
 class WorldCreateRequest(BaseModel):
-    name: str = Field(..., description="World name (folder-safe).")
+    name: str = Field(..., description="World name (folder-safe: alphanumeric, underscore, hyphen; 1-64 chars).")
     select_after_create: bool = Field(default=True, description="Whether to make this the active world immediately.")
+    
+    @field_validator('name')
+    @classmethod
+    def validate_name(cls, v: str) -> str:
+        return _validate_world_name(v)
 
 class WorldSelectRequest(BaseModel):
     name: str = Field(..., description="Existing world name to select ('default' allowed).")
     create_if_missing: bool = Field(default=False, description="Create a new empty world if it does not exist.")
+    
+    @field_validator('name')
+    @classmethod
+    def validate_name(cls, v: str) -> str:
+        if v == "default":
+            return v
+        return _validate_world_name(v)
 
 class MultiArchetypeRequest(BaseModel):
     character_name: str = Field(..., description="Name of the character to analyze across multiple frameworks.")
@@ -434,7 +493,8 @@ def create_lore_entry(entry: LoreEntry):
     """Saves a new, structured entry into the world lore database."""
     global LORE_DATABASE
     new_entry = entry.dict()
-    new_entry["id"] = len(LORE_DATABASE) + 1
+    # Use UUID for unique, collision-free IDs
+    new_entry["id"] = str(uuid.uuid4())
     LORE_DATABASE.append(new_entry)
     save_lore_db(LORE_DATABASE)
 
@@ -486,7 +546,7 @@ def list_tools():
         "available_tools": [
             {
                 "name": "mythos_archetype_analysis",
-                "description": "Analyze characters through 10 storytelling frameworks (Jungian, Disney, James Cameron, etc.)",
+                "description": "Analyze characters through 22 storytelling frameworks (Jungian, Disney, James Cameron, Norse, Greek, Horror, Sci-Fi, Stephen King, Japanese, Korean, etc.)",
                 "parameters": "character_name, description, style (optional)"
             },
             {
@@ -612,8 +672,9 @@ def list_lore_entries(req: LoreSearchRequest):
     }
 
 @app.post("/call/mythos_wipe_lore_db")
-def wipe_lore_db(req: WipeRequest):
+def wipe_lore_db(req: WipeRequest, x_admin_token: str | None = Header(None)):
     """Irreversibly wipe the current world's lore database after confirmation."""
+    _check_admin_auth(x_admin_token)
     global LORE_DATABASE
     if req.confirm != "CONFIRM":
         raise HTTPException(status_code=400, detail="Confirmation failed. Pass confirm='CONFIRM' to proceed.")
@@ -669,7 +730,8 @@ def list_worlds():
     return response
 
 @app.post("/call/mythos_create_world")
-def create_world(req: WorldCreateRequest):
+def create_world(req: WorldCreateRequest, x_admin_token: str | None = Header(None)):
+    _check_admin_auth(x_admin_token)
     name = req.name.strip()
     if not name:
         raise HTTPException(status_code=400, detail="World name cannot be empty.")
@@ -697,7 +759,8 @@ def create_world(req: WorldCreateRequest):
     return resp
 
 @app.post("/call/mythos_select_world")
-def select_world(req: WorldSelectRequest):
+def select_world(req: WorldSelectRequest, x_admin_token: str | None = Header(None)):
+    _check_admin_auth(x_admin_token)
     name = req.name.strip()
     if not name:
         raise HTTPException(status_code=400, detail="World name cannot be empty.")
@@ -929,21 +992,34 @@ def _current_sessions_path() -> str:
 def load_sessions() -> Dict[str, Dict[str, Any]]:
     path = _current_sessions_path()
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    if not os.path.exists(path):
-        return {}
-    try:
-        with open(path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-            return data if isinstance(data, dict) else {}
-    except json.JSONDecodeError:
-        print(f"Warning: sessions file corrupted at {path}; starting empty.")
-        return {}
+    
+    lock = _get_lock_for_path(path)
+    with lock:
+        if not os.path.exists(path):
+            return {}
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                return data if isinstance(data, dict) else {}
+        except json.JSONDecodeError:
+            print(f"Warning: sessions file corrupted at {path}; starting empty.")
+            return {}
 
 def save_sessions(sessions: Dict[str, Dict[str, Any]]):
     path = _current_sessions_path()
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(sessions, f, indent=2, ensure_ascii=False)
+    
+    lock = _get_lock_for_path(path)
+    with lock:
+        dir_path = os.path.dirname(path)
+        with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8',
+                                          dir=dir_path, delete=False,
+                                          suffix='.tmp') as tmp:
+            json.dump(sessions, tmp, indent=2, ensure_ascii=False)
+            tmp.flush()
+            os.fsync(tmp.fileno())
+            tmp_path = tmp.name
+        os.replace(tmp_path, path)
 
 CREATION_SESSIONS: Dict[str, Dict[str, Any]] = load_sessions()
 

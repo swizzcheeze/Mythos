@@ -94,7 +94,7 @@ const tools = [
       type: 'object',
       required: ['id'],
       properties: {
-        id: { type: 'integer', description: 'Existing lore entry ID.' },
+        id: { type: 'string', description: 'Existing lore entry ID (UUID string).' },
         topic: { type: 'string', description: 'Optional updated topic/title.' },
         content: { type: 'string', description: 'Optional updated content.' },
         tags: { type: 'array', items: { type: 'string' }, description: 'Optional updated tags array.' }
