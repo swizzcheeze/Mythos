@@ -191,40 +191,48 @@ ARCHETYPE_DEFINITIONS = {
     }
 }
 
+def _load_lore_db_unlocked(world_name: str | None = None) -> List[Dict[str, Any]]:
+    """Internal: Loads lore DB without acquiring lock (caller must hold lock)."""
+    db_path = _current_db_path(world_name)
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    try:
+        with open(db_path, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+    except json.JSONDecodeError:
+        print(f"Warning: {db_path} is corrupted. Starting with empty database.")
+        return []
+
 def load_lore_db(world_name: str | None = None) -> List[Dict[str, Any]]:
     """Loads the lore database from a persistent JSON file with thread safety."""
     db_path = _current_db_path(world_name)
-    os.makedirs(os.path.dirname(db_path), exist_ok=True)
-    
     lock = _get_lock_for_path(db_path)
     with lock:
-        try:
-            with open(db_path, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return []
-        except json.JSONDecodeError:
-            print(f"Warning: {db_path} is corrupted. Starting with empty database.")
-            return []
+        return _load_lore_db_unlocked(world_name)
+
+def _save_lore_db_unlocked(db: List[Dict[str, Any]], world_name: str | None = None):
+    """Internal: Atomically saves lore DB without acquiring lock (caller must hold lock)."""
+    db_path = _current_db_path(world_name)
+    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    # Write to temp file in same directory, then atomic rename
+    dir_path = os.path.dirname(db_path)
+    with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', 
+                                      dir=dir_path, delete=False, 
+                                      suffix='.tmp') as tmp:
+        json.dump(db, tmp, indent=2, ensure_ascii=False)
+        tmp.flush()
+        os.fsync(tmp.fileno())
+        tmp_path = tmp.name
+    # Atomic rename (POSIX) or best-effort on Windows
+    os.replace(tmp_path, db_path)
 
 def save_lore_db(db: List[Dict[str, Any]], world_name: str | None = None):
     """Atomically saves the lore database using temp file + rename for crash safety."""
     db_path = _current_db_path(world_name)
-    os.makedirs(os.path.dirname(db_path), exist_ok=True)
-    
     lock = _get_lock_for_path(db_path)
     with lock:
-        # Write to temp file in same directory, then atomic rename
-        dir_path = os.path.dirname(db_path)
-        with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', 
-                                          dir=dir_path, delete=False, 
-                                          suffix='.tmp') as tmp:
-            json.dump(db, tmp, indent=2, ensure_ascii=False)
-            tmp.flush()
-            os.fsync(tmp.fileno())
-            tmp_path = tmp.name
-        # Atomic rename (POSIX) or best-effort on Windows
-        os.replace(tmp_path, db_path)
+        _save_lore_db_unlocked(db, world_name)
 
 # Initialize database (kept for backward compatibility with global world state)
 # New endpoints should use load_lore_db(world) directly
@@ -526,16 +534,22 @@ def multi_archetype_analysis(req: MultiArchetypeRequest):
 def create_lore_entry(entry: LoreEntry):
     """Saves a new, structured entry into the world lore database."""
     world = entry.world
-    db = load_lore_db(world)
-    new_entry = entry.dict(exclude={'world'})
-    # Use UUID for unique, collision-free IDs
-    new_entry["id"] = str(uuid.uuid4())
-    db.append(new_entry)
-    save_lore_db(db, world)
+    db_path = _current_db_path(world)
+    
+    # Hold lock for entire read-modify-write transaction
+    lock = _get_lock_for_path(db_path)
+    with lock:
+        db = _load_lore_db_unlocked(world)
+        new_entry = entry.dict(exclude={'world'})
+        # Use UUID for unique, collision-free IDs
+        new_entry["id"] = str(uuid.uuid4())
+        db.append(new_entry)
+        _save_lore_db_unlocked(db, world)
+        entry_count = len(db)
 
     return {
         "status": "success",
-        "message": f"New lore entry '{entry.topic}' saved to world '{world}'. Total entries: {len(db)}.",
+        "message": f"New lore entry '{entry.topic}' saved to world '{world}'. Total entries: {entry_count}.",
         "entry_id": new_entry["id"],
         "world": world
     }
@@ -544,20 +558,27 @@ def create_lore_entry(entry: LoreEntry):
 def update_lore_entry(req: LoreUpdateRequest):
     """Updates an existing lore entry by ID. Partial updates supported."""
     world = req.world
-    db = load_lore_db(world)
-    entry = next((e for e in db if e.get("id") == req.id), None)
-    if not entry:
-        raise HTTPException(status_code=404, detail=f"Lore entry with id {req.id} not found in world '{world}'.")
+    db_path = _current_db_path(world)
+    
+    # Hold lock for entire read-modify-write transaction
+    lock = _get_lock_for_path(db_path)
+    with lock:
+        db = _load_lore_db_unlocked(world)
+        entry = next((e for e in db if e.get("id") == req.id), None)
+        if not entry:
+            raise HTTPException(status_code=404, detail=f"Lore entry with id {req.id} not found in world '{world}'.")
 
-    if req.topic is not None:
-        entry["topic"] = req.topic
-    if req.content is not None:
-        entry["content"] = req.content
-    if req.tags is not None:
-        entry["tags"] = req.tags
+        if req.topic is not None:
+            entry["topic"] = req.topic
+        if req.content is not None:
+            entry["content"] = req.content
+        if req.tags is not None:
+            entry["tags"] = req.tags
 
-    save_lore_db(db, world)
-    return {"status": "success", "message": f"Entry {req.id} updated in world '{world}'.", "entry": entry, "world": world}
+        _save_lore_db_unlocked(db, world)
+        entry_copy = entry.copy()
+    
+    return {"status": "success", "message": f"Entry {req.id} updated in world '{world}'.", "entry": entry_copy, "world": world}
 
 @app.post("/call/mythos_get_inspiration")
 def get_inspiration(req: InspirationRequest):
