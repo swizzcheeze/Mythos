@@ -2704,5 +2704,142 @@
     ],
     "filled": {},
     "history": []
+  },
+  "88086fd4-de3e-4015-9658-c83091c5da43": {
+    "id": "88086fd4-de3e-4015-9658-c83091c5da43",
+    "template_type": "character",
+    "style": "Fantasy",
+    "sections": {
+      "Basic Info": [
+        "Name",
+        "Age/Era",
+        "Occupation/Role",
+        "Physical Description"
+      ],
+      "Core Identity": [
+        "Primary Motivation",
+        "Fatal Flaw",
+        "Greatest Fear",
+        "Defining Trait"
+      ],
+      "Background": [
+        "Origin Story",
+        "Formative Event",
+        "Relationships",
+        "Current Status"
+      ],
+      "Abilities": [
+        "Skills/Powers",
+        "Weaknesses",
+        "Equipment/Tools",
+        "Special Abilities"
+      ],
+      "Development": [
+        "Character Arc",
+        "Internal Conflict",
+        "External Conflict",
+        "Potential Endings"
+      ]
+    },
+    "prompts": [
+      "What secret does this character keep from everyone?",
+      "How would they react under extreme pressure?",
+      "What would they sacrifice everything for?",
+      "What's the one thing they refuse to do, no matter what?"
+    ],
+    "filled": {
+      "Basic Info": {
+        "Name": "Test Character"
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Basic Info": {
+            "Name": "Test Character"
+          }
+        }
+      },
+      {
+        "type": "finalize",
+        "preview_length": 782
+      }
+    ]
+  },
+  "ec2fb170-aa94-4523-a552-dc97b699904e": {
+    "id": "ec2fb170-aa94-4523-a552-dc97b699904e",
+    "template_type": "world",
+    "style": "Fantasy",
+    "sections": {
+      "Core Identity": [
+        "World Name",
+        "Central Theme",
+        "Tone/Atmosphere",
+        "Era/Timeline"
+      ],
+      "Geography": [
+        "Major Regions",
+        "Landforms",
+        "Climate Zones",
+        "Natural Wonders"
+      ],
+      "Cultures": [
+        "Dominant Cultures",
+        "Languages",
+        "Shared Traditions",
+        "Cultural Conflicts"
+      ],
+      "History & Myth": [
+        "Founding Event",
+        "Myths/Legends",
+        "Cataclysms",
+        "Turning Points"
+      ],
+      "Economy & Resources": [
+        "Key Resources",
+        "Trade Hubs",
+        "Scarce Commodities",
+        "Economic Tensions"
+      ],
+      "Magic / Technology": [
+        "Systems",
+        "Limitations",
+        "Unique Innovations",
+        "Forbidden Knowledge"
+      ],
+      "Factions & Power": [
+        "Major Factions",
+        "Power Balance",
+        "Hidden Influences",
+        "Emerging Threats"
+      ],
+      "Ecology": [
+        "Biome Types",
+        "Keystone Species",
+        "Environmental Pressures",
+        "Extinction Risks"
+      ],
+      "Conflicts & Tensions": [
+        "Active Conflicts",
+        "Rising Tensions",
+        "Moral Dilemmas",
+        "Imminent Crises"
+      ],
+      "Hooks": [
+        "Adventure Hooks",
+        "Mysteries",
+        "Unanswered Questions",
+        "Future Arcs"
+      ]
+    },
+    "prompts": [
+      "What unseen force quietly shapes the world's destiny?",
+      "Which region holds a secret that could rewrite history?",
+      "What resource is on the brink of collapse and why?",
+      "What contradiction defines this world's identity?"
+    ],
+    "filled": {},
+    "history": []
   }
 }

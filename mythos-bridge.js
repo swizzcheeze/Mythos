@@ -27,7 +27,8 @@ const tools = [
       properties: {
         topic: { type: 'string', description: 'The topic or title of the lore entry (e.g., "The Obsidian War").' },
         content: { type: 'string', description: 'The detailed narrative content of the lore entry.' },
-        tags: { type: 'array', items: { type: 'string' }, description: 'Optional tags (e.g., ["magic", "location", "history"]).' }
+        tags: { type: 'array', items: { type: 'string' }, description: 'Optional tags (e.g., ["magic", "location", "history"]).' },
+        world: { type: 'string', description: 'Optional target world name (defaults to "default").' }
       },
       required: ['topic', 'content']
     }
@@ -65,7 +66,8 @@ const tools = [
       type: 'object',
       properties: {
         search_query: { type: 'string', description: 'Optional search term to filter by topic or content.' },
-        tags: { type: 'array', items: { type: 'string' }, description: 'Optional tags to filter entries (e.g., ["magic", "ritual"]).' }
+        tags: { type: 'array', items: { type: 'string' }, description: 'Optional tags to filter entries (e.g., ["magic", "ritual"]).' },
+        world: { type: 'string', description: 'Optional target world name (defaults to "default").' }
       }
     }
   },
@@ -97,18 +99,20 @@ const tools = [
         id: { type: 'string', description: 'Existing lore entry ID (UUID string).' },
         topic: { type: 'string', description: 'Optional updated topic/title.' },
         content: { type: 'string', description: 'Optional updated content.' },
-        tags: { type: 'array', items: { type: 'string' }, description: 'Optional updated tags array.' }
+        tags: { type: 'array', items: { type: 'string' }, description: 'Optional updated tags array.' },
+        world: { type: 'string', description: 'Optional target world name (defaults to "default").' }
       }
     }
   },
   {
     name: 'mythos_wipe_lore_db',
-    description: 'IRREVERSIBLE: Wipe the current world database after confirmation.',
+    description: 'IRREVERSIBLE: Wipe the specified world database after confirmation.',
     inputSchema: {
       type: 'object',
       required: ['confirm'],
       properties: {
-        confirm: { type: 'string', description: "Must be 'CONFIRM' to proceed." }
+        confirm: { type: 'string', description: "Must be 'CONFIRM' to proceed." },
+        world: { type: 'string', description: 'Optional target world name (defaults to "default").' }
       }
     }
   },

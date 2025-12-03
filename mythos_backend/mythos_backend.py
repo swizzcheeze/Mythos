@@ -45,15 +45,16 @@ def _check_admin_auth(x_admin_token: str | None = None) -> None:
     if x_admin_token != ADMIN_TOKEN:
         raise HTTPException(status_code=403, detail="Forbidden: invalid or missing admin token")
 
-def _current_db_path() -> str:
-    """Return the active world's lore DB file path.
+def _current_db_path(world_name: str | None = None) -> str:
+    """Return the specified world's lore DB file path.
     - default world uses the legacy LORE_DB_BASE_PATH directly
     - other worlds live under <base_dir>/worlds/<name>/lore_db.json
     """
-    if ACTIVE_WORLD_NAME == "default":
+    world = world_name or ACTIVE_WORLD_NAME
+    if world == "default":
         return LORE_DB_BASE_PATH
     base_dir = os.path.dirname(LORE_DB_BASE_PATH)
-    return os.path.join(base_dir, "worlds", ACTIVE_WORLD_NAME, "lore_db.json")
+    return os.path.join(base_dir, "worlds", world, "lore_db.json")
 
 ARCHETYPE_DEFINITIONS = {
     "Jungian": {
@@ -190,9 +191,9 @@ ARCHETYPE_DEFINITIONS = {
     }
 }
 
-def load_lore_db() -> List[Dict[str, Any]]:
+def load_lore_db(world_name: str | None = None) -> List[Dict[str, Any]]:
     """Loads the lore database from a persistent JSON file with thread safety."""
-    db_path = _current_db_path()
+    db_path = _current_db_path(world_name)
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
     
     lock = _get_lock_for_path(db_path)
@@ -206,9 +207,9 @@ def load_lore_db() -> List[Dict[str, Any]]:
             print(f"Warning: {db_path} is corrupted. Starting with empty database.")
             return []
 
-def save_lore_db(db: List[Dict[str, Any]]):
+def save_lore_db(db: List[Dict[str, Any]], world_name: str | None = None):
     """Atomically saves the lore database using temp file + rename for crash safety."""
-    db_path = _current_db_path()
+    db_path = _current_db_path(world_name)
     os.makedirs(os.path.dirname(db_path), exist_ok=True)
     
     lock = _get_lock_for_path(db_path)
@@ -225,7 +226,8 @@ def save_lore_db(db: List[Dict[str, Any]]):
         # Atomic rename (POSIX) or best-effort on Windows
         os.replace(tmp_path, db_path)
 
-# Initialize database
+# Initialize database (kept for backward compatibility with global world state)
+# New endpoints should use load_lore_db(world) directly
 LORE_DATABASE = load_lore_db()
 
 # --- Semantic Scoring Helpers (lightweight, no external ML deps) ---
@@ -277,6 +279,14 @@ class LoreEntry(BaseModel):
     topic: str = Field(..., description="The title of the lore entry (e.g., 'The Obsidian War').")
     content: str = Field(..., description="The detailed narrative content.")
     tags: List[str] = Field(default=[], description="Relevant tags (e.g., ['magic', 'location', 'history', 'jungian']).")
+    world: str = Field(default="default", description="Target world name (defaults to 'default').")
+    
+    @field_validator('world')
+    @classmethod
+    def validate_world(cls, v: str) -> str:
+        if v == "default":
+            return v
+        return _validate_world_name(v)
 
 class InspirationRequest(BaseModel):
     style: str = Field(None, description="The desired creative style or theme (e.g., 'cosmic horror', 'dark fantasy').")
@@ -284,6 +294,14 @@ class InspirationRequest(BaseModel):
 class LoreSearchRequest(BaseModel):
     search_query: str = Field(None, description="Optional search term to filter lore entries by topic or content.")
     tags: List[str] = Field(default=[], description="Optional tags to filter entries (e.g., ['magic', 'ritual']).")
+    world: str = Field(default="default", description="Target world name (defaults to 'default').")
+    
+    @field_validator('world')
+    @classmethod
+    def validate_world(cls, v: str) -> str:
+        if v == "default":
+            return v
+        return _validate_world_name(v)
 
 class CreationModeRequest(BaseModel):
     template_type: str = Field(..., description="Template type: 'character', 'location', 'faction', 'magic_system', 'creature', 'artifact', 'event', 'culture', 'conflict', 'ritual'.")
@@ -294,9 +312,25 @@ class LoreUpdateRequest(BaseModel):
     topic: str | None = Field(None, description="Updated title (optional).")
     content: str | None = Field(None, description="Updated content (optional).")
     tags: List[str] | None = Field(None, description="Updated tags (optional).")
+    world: str = Field(default="default", description="Target world name (defaults to 'default').")
+    
+    @field_validator('world')
+    @classmethod
+    def validate_world(cls, v: str) -> str:
+        if v == "default":
+            return v
+        return _validate_world_name(v)
 
 class WipeRequest(BaseModel):
-    confirm: str = Field(..., description="Type 'CONFIRM' to irreversibly wipe the current world's database.")
+    confirm: str = Field(..., description="Type 'CONFIRM' to irreversibly wipe the specified world's database.")
+    world: str = Field(default="default", description="Target world name (defaults to 'default').")
+    
+    @field_validator('world')
+    @classmethod
+    def validate_world(cls, v: str) -> str:
+        if v == "default":
+            return v
+        return _validate_world_name(v)
 
 class WorldCreateRequest(BaseModel):
     name: str = Field(..., description="World name (folder-safe: alphanumeric, underscore, hyphen; 1-64 chars).")
@@ -491,26 +525,29 @@ def multi_archetype_analysis(req: MultiArchetypeRequest):
 @app.post("/call/mythos_create_lore_entry")
 def create_lore_entry(entry: LoreEntry):
     """Saves a new, structured entry into the world lore database."""
-    global LORE_DATABASE
-    new_entry = entry.dict()
+    world = entry.world
+    db = load_lore_db(world)
+    new_entry = entry.dict(exclude={'world'})
     # Use UUID for unique, collision-free IDs
     new_entry["id"] = str(uuid.uuid4())
-    LORE_DATABASE.append(new_entry)
-    save_lore_db(LORE_DATABASE)
+    db.append(new_entry)
+    save_lore_db(db, world)
 
     return {
         "status": "success",
-        "message": f"New lore entry '{entry.topic}' saved to world database. Total entries: {len(LORE_DATABASE)}.",
-        "entry_id": new_entry["id"]
+        "message": f"New lore entry '{entry.topic}' saved to world '{world}'. Total entries: {len(db)}.",
+        "entry_id": new_entry["id"],
+        "world": world
     }
 
 @app.post("/call/mythos_update_lore_entry")
 def update_lore_entry(req: LoreUpdateRequest):
     """Updates an existing lore entry by ID. Partial updates supported."""
-    global LORE_DATABASE
-    entry = next((e for e in LORE_DATABASE if e.get("id") == req.id), None)
+    world = req.world
+    db = load_lore_db(world)
+    entry = next((e for e in db if e.get("id") == req.id), None)
     if not entry:
-        raise HTTPException(status_code=404, detail=f"Lore entry with id {req.id} not found.")
+        raise HTTPException(status_code=404, detail=f"Lore entry with id {req.id} not found in world '{world}'.")
 
     if req.topic is not None:
         entry["topic"] = req.topic
@@ -519,8 +556,8 @@ def update_lore_entry(req: LoreUpdateRequest):
     if req.tags is not None:
         entry["tags"] = req.tags
 
-    save_lore_db(LORE_DATABASE)
-    return {"status": "success", "message": f"Entry {req.id} updated.", "entry": entry}
+    save_lore_db(db, world)
+    return {"status": "success", "message": f"Entry {req.id} updated in world '{world}'.", "entry": entry, "world": world}
 
 @app.post("/call/mythos_get_inspiration")
 def get_inspiration(req: InspirationRequest):
@@ -628,7 +665,9 @@ def list_archetype_styles():
 @app.post("/call/mythos_list_lore_entries")
 def list_lore_entries(req: LoreSearchRequest):
     """Retrieves lore entries from the database with optional search and tag filtering."""
-    results = LORE_DATABASE.copy()
+    world = req.world
+    db = load_lore_db(world)
+    results = db.copy()
     
     # Filter by search query if provided
     if req.search_query:
@@ -645,42 +684,48 @@ def list_lore_entries(req: LoreSearchRequest):
             if any(tag in entry.get('tags', []) for tag in req.tags)
         ]
     
-    if len(LORE_DATABASE) == 0:
+    if len(db) == 0:
         return {
             "total_entries": 0,
             "filtered_results": 0,
             "entries": [],
             "empty": True,
-            "message": "There are no lore entries yet. Shall we start creating one? Use mythos_creation_session_start (character or world) or mythos_create_lore_entry.",
+            "world": world,
+            "message": f"World '{world}' has no lore entries yet. Use mythos_creation_session_start (character or world) or mythos_create_lore_entry.",
             "suggestion": {
                 "start_world_template": "Consider starting a world template session: mythos_creation_session_start { template_type: 'world', style: 'Fantasy' }"
             }
         }
     if len(results) == 0:
         return {
-            "total_entries": len(LORE_DATABASE),
+            "total_entries": len(db),
             "filtered_results": 0,
             "entries": [],
             "empty_filtered": True,
+            "world": world,
             "message": "No lore entries matched your filters. Try adjusting search or tags." 
         }
     return {
-        "total_entries": len(LORE_DATABASE),
+        "total_entries": len(db),
         "filtered_results": len(results),
         "entries": results,
-        "message": f"Found {len(results)} lore entries" + (f" matching '{req.search_query}'" if req.search_query else "") + (f" with tags {req.tags}" if req.tags else "")
+        "world": world,
+        "message": f"Found {len(results)} lore entries in world '{world}'" + (f" matching '{req.search_query}'" if req.search_query else "") + (f" with tags {req.tags}" if req.tags else "")
     }
 
 @app.post("/call/mythos_wipe_lore_db")
 def wipe_lore_db(req: WipeRequest, x_admin_token: str | None = Header(None)):
-    """Irreversibly wipe the current world's lore database after confirmation."""
+    """Irreversibly wipe the specified world's lore database after confirmation."""
     _check_admin_auth(x_admin_token)
-    global LORE_DATABASE
+    world = req.world if hasattr(req, 'world') else "default"
     if req.confirm != "CONFIRM":
         raise HTTPException(status_code=400, detail="Confirmation failed. Pass confirm='CONFIRM' to proceed.")
-    LORE_DATABASE = []
-    save_lore_db(LORE_DATABASE)
-    return {"status": "success", "message": f"World '{ACTIVE_WORLD_NAME}' lore database wiped."}
+    save_lore_db([], world)
+    # Also clear global if it was the active world (for backward compatibility)
+    if world == ACTIVE_WORLD_NAME:
+        global LORE_DATABASE
+        LORE_DATABASE = []
+    return {"status": "success", "message": f"World '{world}' lore database wiped.", "world": world}
 
 def _worlds_base_dir() -> str:
     base_dir = os.path.dirname(LORE_DB_BASE_PATH)
@@ -981,16 +1026,16 @@ def creation_mode(req: CreationModeRequest):
     }
 
 # --- Interactive Creation Sessions (persistent per world) ---
-def _current_sessions_path() -> str:
-    """Return path to the sessions.json for the active world."""
-    if ACTIVE_WORLD_NAME == "default":
-        base_dir = os.path.dirname(LORE_DB_BASE_PATH)
-        return os.path.join(base_dir, "sessions.json")
+def _current_sessions_path(world_name: str | None = None) -> str:
+    """Return path to the sessions.json for the specified world."""
+    world = world_name or ACTIVE_WORLD_NAME
     base_dir = os.path.dirname(LORE_DB_BASE_PATH)
-    return os.path.join(base_dir, "worlds", ACTIVE_WORLD_NAME, "sessions.json")
+    if world == "default":
+        return os.path.join(base_dir, "sessions.json")
+    return os.path.join(base_dir, "worlds", world, "sessions.json")
 
-def load_sessions() -> Dict[str, Dict[str, Any]]:
-    path = _current_sessions_path()
+def load_sessions(world_name: str | None = None) -> Dict[str, Dict[str, Any]]:
+    path = _current_sessions_path(world_name)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     
     lock = _get_lock_for_path(path)
@@ -1005,8 +1050,8 @@ def load_sessions() -> Dict[str, Dict[str, Any]]:
             print(f"Warning: sessions file corrupted at {path}; starting empty.")
             return {}
 
-def save_sessions(sessions: Dict[str, Dict[str, Any]]):
-    path = _current_sessions_path()
+def save_sessions(sessions: Dict[str, Dict[str, Any]], world_name: str | None = None):
+    path = _current_sessions_path(world_name)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     
     lock = _get_lock_for_path(path)
@@ -1021,7 +1066,7 @@ def save_sessions(sessions: Dict[str, Dict[str, Any]]):
             tmp_path = tmp.name
         os.replace(tmp_path, path)
 
-CREATION_SESSIONS: Dict[str, Dict[str, Any]] = load_sessions()
+CREATION_SESSIONS: Dict[str, Dict[str, Any]] = load_sessions()  # Kept for backward compatibility
 
 class CreationSessionStartRequest(BaseModel):
     template_type: str = Field(..., description="Template type: character, location, faction, magic_system, creature, artifact, event, culture, conflict, ritual.")

@@ -97,17 +97,40 @@ curl -X POST http://localhost:8001/call/mythos_wipe_lore_db \
 
 ---
 
-## Remaining Considerations
+## Phase 2: Per-Request World Context (Implemented)
 
-### Global World State (Not Yet Addressed)
-**Issue**: `ACTIVE_WORLD_NAME` is a process-global variable mutated by world select operations. Under concurrent multi-user access, users can interfere with each other's world context.
+### Global World State Resolution
+**Issue**: `ACTIVE_WORLD_NAME` was a process-global variable mutated by world select operations. Under concurrent multi-user access, users could interfere with each other's world context.
 
-**Future Fix Options**:
-1. **Per-request world parameter**: Add `world_name` to all tool schemas and resolve paths per-request
-2. **Session-based tenancy**: Issue session tokens tied to a world; resolve via FastAPI dependency injection
-3. **Single-user assumption**: Document that backend is single-user and recommend reverse proxy with per-user instances
+**Fix**:
+- Added optional `world` parameter to all lore operations: `create_lore_entry`, `update_lore_entry`, `list_lore_entries`, `wipe_lore_db`
+- Updated `_current_db_path()` and `_current_sessions_path()` to accept `world_name` parameter
+- Updated `load_lore_db()`, `save_lore_db()`, `load_sessions()`, `save_sessions()` to accept world context
+- Added Pydantic validators for world names on all request models
+- Updated bridge schemas to expose optional `world` parameter (defaults to "default")
+- Global `LORE_DATABASE` and `ACTIVE_WORLD_NAME` retained for backward compatibility with world select operations
 
-**Current Mitigation**: Atomic file operations prevent corruption; race conditions on world state are possible but won't corrupt files.
+**Impact**: 
+- **Multi-user safe**: Each request specifies its world context; no cross-talk
+- **Backward compatible**: Existing clients without world param default to "default" world
+- **Explicit tenancy**: World context is clear and traceable in logs
+- **Concurrent access**: Multiple users can safely operate on different worlds simultaneously
+
+**Usage**:
+```python
+# Default world (implicit)
+mythos_create_lore_entry(topic="...", content="...")
+
+# Explicit world
+mythos_create_lore_entry(topic="...", content="...", world="Eldoria")
+mythos_list_lore_entries(world="Eldoria")
+mythos_update_lore_entry(id="uuid", content="...", world="Eldoria")
+```
+
+**Remaining Global State**:
+- `ACTIVE_WORLD_NAME` still used by `mythos_select_world` and `mythos_create_world` for backward compatibility
+- Session operations still use global `CREATION_SESSIONS` (future enhancement: add world param to sessions)
+- Not a concern for data integrity due to atomic file operations
 
 ---
 
