@@ -169,6 +169,7 @@ mythos/
 
 ## 📖 Documentation
 - [Installation Guide](INSTALLATION.md)
+- Chat Agent (Dev-Only): Files under `.github/agents/` are for GitHub Code Agent/Chat assistance only. They are excluded from release archives and ignored from version control to avoid shipping non-runtime assets.
 - Roleplay quick test (HTTP):
   ```powershell
   Invoke-WebRequest -Uri http://localhost:8001/call/mythos_roleplay_start -Method POST -ContentType 'application/json' -Body '{"character_name":"Seren Valis","bio":"Quiet scholar of forbidden runes.","style":"Fantasy"}'
