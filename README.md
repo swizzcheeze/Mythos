@@ -21,7 +21,12 @@ Now powered by lightweight semantic scoring (token + synonym overlap) for more m
 Use `mythos_multi_archetype_analysis` for composite synthesis with per-framework confidence and a diversity tension metric.
 
 ### 📖 Persistent Lore Database & Multi-World Workspaces
-Per-world JSON storage (default + custom worlds). Tools to create/select/list/wipe worlds. Each world has independent `lore_db.json` and `sessions.json`.
+Per-world JSON storage (default + custom worlds). Tools to create/select/list/wipe worlds. Each world has independent `lore_db.json`, `sessions.json`, and vector embeddings via FAISS.
+
+**NEW: Semantic Lore Search** – Search by thematic meaning using embeddings. Find entries like "ancient prophecies and doom" across your entire lore database with semantic similarity ranking.
+
+### 🔍 Embedding-Based Semantic Search
+Find lore entries by meaning, not just keywords. Uses local SentenceTransformers by default (`all-MiniLM-L6-v2`) with optional Cohere online embeddings. Embeddings are auto-indexed with FAISS for fast similarity search and persist across sessions.
 
 ### 🛠 Interactive Creation Sessions
 Iterative, persistent templates (character, location, faction, magic_system, creature, artifact, event, culture, conflict, ritual, world). Start → update fields → preview (finalize) → optionally commit as lore.
@@ -57,8 +62,9 @@ Returns primary/secondary archetypes from each framework plus a synthesis summar
 | `mythos_multi_archetype_analysis` | Composite blended archetype synthesis |
 | `mythos_creation_mode` | One-shot static template guide |
 | `mythos_creation_session_start/update/get/finalize/list` | Interactive persistent creation workflow |
-| `mythos_create_lore_entry` / `mythos_update_lore_entry` | Add & edit lore |
+| `mythos_create_lore_entry` / `mythos_update_lore_entry` | Add & edit lore (auto-embedded) |
 | `mythos_list_lore_entries` | Search & tag filter lore entries |
+| `mythos_semantic_lore_search` | Find lore by semantic meaning with ranking |
 | `mythos_wipe_lore_db` | Irreversibly wipe active world lore |
 | `mythos_create_world` / `mythos_select_world` / `mythos_list_worlds` | Multi-world management |
 | `mythos_get_inspiration` | Thematic creative constraints |
@@ -123,12 +129,41 @@ Use this script in CI or pre-commit hooks to guard against tool drift or backend
 
 ---
 
+## 🔍 Embedding & Semantic Search Configuration
+
+**Local Embeddings (Default)**
+- Model: `all-MiniLM-L6-v2` via SentenceTransformers
+- No API keys required, runs fully locally
+- Fast indexing with FAISS
+
+**Online Embeddings (Optional – Cohere)**
+Set `COHERE_API_KEY` environment variable:
+```bash
+export COHERE_API_KEY="your-api-key-here"
+docker compose up --build -d
+```
+
+The system automatically tries Cohere first if configured, falls back to local model on failure.
+
+**Configuration**
+| Variable | Purpose | Default |
+|----------|---------|---------|
+| `MYTHOS_EMBEDDING_MODEL` | SentenceTransformers model name | `all-MiniLM-L6-v2` |
+| `COHERE_API_KEY` | Optional Cohere API key (enables online embeddings) | (disabled) |
+
+**Vector Storage**
+- Per-world metadata: `world_data/worlds/<name>/vectors_metadata.json`
+- FAISS indices: Loaded in-memory, rebuilt on service restart from lore entries
+- Auto-embedded on `create_lore_entry`, enabling immediate semantic search
+
+---
+
 ## 🎯 Use Cases
 - Writers: Layered archetype tension maps for protagonists
-- Game Designers: World-per-project isolated lore + sessions
+- Game Designers: World-per-project isolated lore + sessions + semantic search
 - Screenwriters: Cross-genre archetype blending (e.g. Sci-Fi Horror)
-- RPG Masters: Rapid ritual, faction, creature templates
-- Worldbuilders: Parallel universes with independent persistent data
+- RPG Masters: Rapid ritual, faction, creature templates with thematic discovery
+- Worldbuilders: Parallel universes with independent persistent data + semantic lore discovery
 
 ---
 
