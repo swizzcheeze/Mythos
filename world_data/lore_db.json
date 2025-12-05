@@ -19,5 +19,14 @@
       "magic"
     ],
     "id": 2
+  },
+  {
+    "topic": "Ancient Prophecy",
+    "content": "A mysterious prophecy spoken by the oracles of old, foretelling a great darkness and a champion of light.",
+    "tags": [
+      "prophecy",
+      "magic"
+    ],
+    "id": "8cfbb508-65e8-4608-b9e3-efee38d4d3c8"
   }
 ]

@@ -228,6 +228,19 @@ const tools = [
         max_frameworks: { type: 'integer', description: 'Safety cap on number of frameworks to blend (default 5).' }
       }
     }
+  },
+  {
+    name: 'mythos_semantic_lore_search',
+    description: 'Semantically search lore entries using embeddings. Finds thematically similar entries ranked by semantic similarity.',
+    inputSchema: {
+      type: 'object',
+      required: ['query'],
+      properties: {
+        query: { type: 'string', description: 'Semantic search query (e.g., "ancient magic rituals", "prophecies of doom").' },
+        top_k: { type: 'integer', description: 'Number of results to return (1-50, default 5).' },
+        world: { type: 'string', description: 'Optional target world name (defaults to "default").' }
+      }
+    }
   }
 ];
 

@@ -8,6 +8,70 @@ import tempfile
 from typing import List, Dict, Any
 from fastapi import FastAPI, HTTPException, Header
 from pydantic import BaseModel, Field, field_validator
+import numpy as np
+
+# --- Embedding Infrastructure ---
+# Load embedding model (local by default with SentenceTransformers)
+try:
+    from sentence_transformers import SentenceTransformer
+    EMBEDDING_MODEL_NAME = os.getenv("MYTHOS_EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+    EMBEDDING_MODEL = SentenceTransformer(EMBEDDING_MODEL_NAME)
+    EMBEDDING_DIM = EMBEDDING_MODEL.get_sentence_embedding_dimension()
+    EMBEDDINGS_ENABLED = True
+except ImportError:
+    EMBEDDING_MODEL = None
+    EMBEDDING_DIM = 0
+    EMBEDDINGS_ENABLED = False
+    print("Warning: sentence-transformers not installed. Embeddings disabled.")
+
+# Optional online embedding support (Cohere)
+COHERE_API_KEY = os.getenv("COHERE_API_KEY", None)
+USE_COHERE = COHERE_API_KEY is not None
+if USE_COHERE:
+    try:
+        import cohere
+        COHERE_CLIENT = cohere.ClientV2(api_key=COHERE_API_KEY)
+    except ImportError:
+        USE_COHERE = False
+        print("Warning: cohere not installed. Cohere embeddings disabled.")
+else:
+    COHERE_CLIENT = None
+
+# FAISS index per world (lazy-loaded)
+_faiss_indices: Dict[str, Any] = {}
+_faiss_indices_lock = threading.Lock()
+
+def _get_embedding_for_text(text: str) -> np.ndarray | None:
+    """Get embedding for text, using Cohere if enabled, otherwise local model."""
+    if USE_COHERE and COHERE_CLIENT:
+        try:
+            response = COHERE_CLIENT.embed(
+                texts=[text],
+                model="embed-english-v3.0",
+                input_type="search_document"
+            )
+            return np.array(response.embeddings[0], dtype=np.float32)
+        except Exception as e:
+            print(f"Warning: Cohere embedding failed, falling back to local model: {e}")
+    
+    if EMBEDDINGS_ENABLED and EMBEDDING_MODEL:
+        embedding = EMBEDDING_MODEL.encode(text, convert_to_numpy=True)
+        return embedding.astype(np.float32)
+    
+    return None
+
+def _get_faiss_index(world_name: str | None = None):
+    """Get or create FAISS index for a world."""
+    world = world_name or ACTIVE_WORLD_NAME
+    with _faiss_indices_lock:
+        if world not in _faiss_indices:
+            try:
+                import faiss
+                _faiss_indices[world] = faiss.IndexFlatL2(EMBEDDING_DIM)
+            except ImportError:
+                print("Warning: FAISS not installed. Semantic search disabled.")
+                return None
+        return _faiss_indices[world]
 
 # --- Configuration & State ---
 # Path defined by Docker Compose to point to the host volume mount for persistence
@@ -55,6 +119,40 @@ def _current_db_path(world_name: str | None = None) -> str:
         return LORE_DB_BASE_PATH
     base_dir = os.path.dirname(LORE_DB_BASE_PATH)
     return os.path.join(base_dir, "worlds", world, "lore_db.json")
+
+def _current_vectors_path(world_name: str | None = None) -> str:
+    """Return the specified world's vector metadata file path.
+    Tracks lore entry IDs and their embedding indices for FAISS.
+    """
+    world = world_name or ACTIVE_WORLD_NAME
+    base_dir = os.path.dirname(LORE_DB_BASE_PATH)
+    if world == "default":
+        return os.path.join(base_dir, "vectors_metadata.json")
+    return os.path.join(base_dir, "worlds", world, "vectors_metadata.json")
+
+def _load_vectors_metadata(world_name: str | None = None) -> Dict[str, Any]:
+    """Load vector metadata (lore ID to embedding index mapping)."""
+    vectors_path = _current_vectors_path(world_name)
+    if os.path.exists(vectors_path):
+        try:
+            with open(vectors_path, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, IOError):
+            return {"entries": [], "model_name": EMBEDDING_MODEL_NAME}
+    return {"entries": [], "model_name": EMBEDDING_MODEL_NAME}
+
+def _save_vectors_metadata(metadata: Dict[str, Any], world_name: str | None = None):
+    """Save vector metadata atomically."""
+    vectors_path = _current_vectors_path(world_name)
+    os.makedirs(os.path.dirname(vectors_path), exist_ok=True)
+    with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8',
+                                      dir=os.path.dirname(vectors_path), delete=False,
+                                      suffix='.tmp') as tmp:
+        json.dump(metadata, tmp, indent=2, ensure_ascii=False)
+        tmp.flush()
+        os.fsync(tmp.fileno())
+        tmp_path = tmp.name
+    os.replace(tmp_path, vectors_path)
 
 ARCHETYPE_DEFINITIONS = {
     "Jungian": {
@@ -340,6 +438,30 @@ class WipeRequest(BaseModel):
             return v
         return _validate_world_name(v)
 
+class SemanticSearchRequest(BaseModel):
+    query: str = Field(..., description="Semantic search query (e.g., 'ancient magic rituals').")
+    top_k: int = Field(default=5, description="Number of top results to return (1-50).")
+    world: str = Field(default="default", description="Target world name (defaults to 'default').")
+    
+    @field_validator('world')
+    @classmethod
+    def validate_world(cls, v: str) -> str:
+        if v == "default":
+            return v
+        return _validate_world_name(v)
+    
+    @field_validator('top_k')
+    @classmethod
+    def validate_top_k(cls, v: int) -> int:
+        if not 1 <= v <= 50:
+            raise ValueError("top_k must be between 1 and 50")
+        return v
+
+class ArchetypeSemanticRequest(BaseModel):
+    character_name: str = Field(..., description="Character name to analyze.")
+    description: str = Field(..., description="Character description.")
+    style: str = Field(default="Jungian", description="Archetype framework to use.")
+
 class WorldCreateRequest(BaseModel):
     name: str = Field(..., description="World name (folder-safe: alphanumeric, underscore, hyphen; 1-64 chars).")
     select_after_create: bool = Field(default=True, description="Whether to make this the active world immediately.")
@@ -532,7 +654,7 @@ def multi_archetype_analysis(req: MultiArchetypeRequest):
 
 @app.post("/call/mythos_create_lore_entry")
 def create_lore_entry(entry: LoreEntry):
-    """Saves a new, structured entry into the world lore database."""
+    """Saves a new, structured entry into the world lore database and indexes it."""
     world = entry.world
     db_path = _current_db_path(world)
     
@@ -546,12 +668,38 @@ def create_lore_entry(entry: LoreEntry):
         db.append(new_entry)
         _save_lore_db_unlocked(db, world)
         entry_count = len(db)
+        entry_id = new_entry["id"]
+    
+    # Embed and index asynchronously (don't block response)
+    if EMBEDDINGS_ENABLED:
+        try:
+            text_to_embed = f"{entry.topic} {entry.content}"
+            embedding = _get_embedding_for_text(text_to_embed)
+            if embedding is not None:
+                index = _get_faiss_index(world)
+                if index is not None:
+                    # Add to FAISS index
+                    index.add(np.array([embedding]))
+                    # Track in metadata
+                    vectors_path = _current_vectors_path(world)
+                    vector_lock = _get_lock_for_path(vectors_path)
+                    with vector_lock:
+                        metadata = _load_vectors_metadata(world)
+                        metadata["entries"].append({
+                            "id": entry_id,
+                            "topic": entry.topic,
+                            "index": len(metadata["entries"])  # FAISS index position
+                        })
+                        _save_vectors_metadata(metadata, world)
+        except Exception as e:
+            print(f"Warning: Failed to embed lore entry {entry_id}: {e}")
 
     return {
         "status": "success",
         "message": f"New lore entry '{entry.topic}' saved to world '{world}'. Total entries: {entry_count}.",
-        "entry_id": new_entry["id"],
-        "world": world
+        "entry_id": entry_id,
+        "world": world,
+        "embedded": EMBEDDINGS_ENABLED
     }
 
 @app.post("/call/mythos_update_lore_entry")
@@ -733,6 +881,86 @@ def list_lore_entries(req: LoreSearchRequest):
         "world": world,
         "message": f"Found {len(results)} lore entries in world '{world}'" + (f" matching '{req.search_query}'" if req.search_query else "") + (f" with tags {req.tags}" if req.tags else "")
     }
+
+@app.post("/call/mythos_semantic_lore_search")
+def semantic_lore_search(req: SemanticSearchRequest):
+    """Semantically search lore entries using embeddings. Returns ranked results by similarity."""
+    if not EMBEDDINGS_ENABLED:
+        return {
+            "status": "error",
+            "message": "Semantic search requires embeddings. Install sentence-transformers and faiss-cpu.",
+            "available": False
+        }
+    
+    world = req.world
+    db = load_lore_db(world)
+    
+    if len(db) == 0:
+        return {
+            "query": req.query,
+            "results": [],
+            "total_entries": 0,
+            "world": world,
+            "message": f"World '{world}' has no lore entries to search."
+        }
+    
+    try:
+        # Get query embedding
+        query_embedding = _get_embedding_for_text(req.query)
+        if query_embedding is None:
+            raise ValueError("Failed to embed query")
+        
+        index = _get_faiss_index(world)
+        if index is None or index.ntotal == 0:
+            return {
+                "query": req.query,
+                "results": [],
+                "total_entries": len(db),
+                "world": world,
+                "message": "No embeddings indexed yet. Create lore entries first."
+            }
+        
+        # Search FAISS index
+        distances, indices = index.search(np.array([query_embedding]), min(req.top_k, index.ntotal))
+        
+        # Load vector metadata to map indices to entry IDs
+        vectors_metadata = _load_vectors_metadata(world)
+        entry_map = {m["index"]: m["id"] for m in vectors_metadata.get("entries", [])}
+        
+        # Build results
+        results = []
+        for dist, idx in zip(distances[0], indices[0]):
+            if idx == -1:  # FAISS padding
+                continue
+            entry_id = entry_map.get(int(idx))
+            if entry_id:
+                entry = next((e for e in db if e.get("id") == entry_id), None)
+                if entry:
+                    results.append({
+                        "id": entry_id,
+                        "topic": entry.get("topic"),
+                        "content": entry.get("content", "")[:200],  # Preview
+                        "tags": entry.get("tags", []),
+                        "similarity_score": 1 - (float(dist) / (1 + float(dist))),  # Normalize L2 distance to similarity
+                        "distance": float(dist)
+                    })
+        
+        return {
+            "query": req.query,
+            "results": results[:req.top_k],
+            "total_results": len(results),
+            "total_entries": len(db),
+            "world": world,
+            "embedding_model": EMBEDDING_MODEL_NAME if not USE_COHERE else "cohere",
+            "message": f"Found {len(results[:req.top_k])} semantically similar entries in world '{world}'."
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Semantic search failed: {str(e)}",
+            "query": req.query,
+            "world": world
+        }
 
 @app.post("/call/mythos_wipe_lore_db")
 def wipe_lore_db(req: WipeRequest, x_admin_token: str | None = Header(None)):

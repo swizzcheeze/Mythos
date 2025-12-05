@@ -40,12 +40,14 @@ function sendToolsList(proc) {
 }
 
 function sendSampleToolCall(proc) {
-  // Validation calls: semantic single, multi-blend, character session, world template session.
+  // Validation calls: semantic single, multi-blend, character session, world template session, and embeddings.
   const calls = [
     { id: 3, name: 'mythos_archetype_analysis', arguments: { character_name: 'Seren Valis', description: 'A scholar of forbidden runes whose quiet compassion battles a growing cosmic dread.', style: 'Gothic' } },
     { id: 4, name: 'mythos_multi_archetype_analysis', arguments: { character_name: 'Seren Valis', description: 'A scholar of forbidden runes whose quiet compassion battles a growing cosmic dread.', styles: 'Fantasy + Horror + Jungian' } },
     { id: 5, name: 'mythos_creation_session_start', arguments: { template_type: 'character', style: 'Fantasy' } },
-    { id: 9, name: 'mythos_creation_session_start', arguments: { template_type: 'world', style: 'Fantasy' } }
+    { id: 9, name: 'mythos_creation_session_start', arguments: { template_type: 'world', style: 'Fantasy' } },
+    { id: 11, name: 'mythos_create_lore_entry', arguments: { topic: 'Ancient Prophecy', content: 'A mysterious prophecy spoken by the oracles of old, foretelling a great darkness and a champion of light.', tags: ['prophecy', 'magic'] } },
+    { id: 12, name: 'mythos_semantic_lore_search', arguments: { query: 'ancient magic and prophecy', top_k: 5 } }
   ];
   for (const c of calls) {
     proc.stdin.write(JSON.stringify({ jsonrpc: '2.0', id: c.id, method: 'tools/call', params: { name: c.name, arguments: c.arguments } }) + '\n');
@@ -85,9 +87,10 @@ function runHealthcheck() {
   let initialized = false;
   let toolsListed = false;
   let pendingSessionId = null;
-  const expectedIds = new Set([3,4,5,6,7,8,9]);
+  const expectedIds = new Set([3,4,5,6,7,8,9,10,11,12]);
   let sessionListValidated = false;
   let worldTemplateValidated = false;
+  let embeddingValidated = false;
 
   proc.stdout.on('data', (data) => {
     output += data.toString();
@@ -172,7 +175,7 @@ function runHealthcheck() {
             } else if (msg.id === 8) {
               console.log('[OK] session list returned count=' + parsed.count);
               sessionListValidated = true;
-              if (worldTemplateValidated) {
+              if (worldTemplateValidated && embeddingValidated) {
                 clearStageTimer('calls');
                 proc.kill();
                 process.exit(0);
@@ -181,11 +184,29 @@ function runHealthcheck() {
               const hasCore = parsed.sections && parsed.sections['Core Identity'];
               console.log(hasCore ? '[OK] world template session sections validated' : '[WARN] world template missing Core Identity');
               worldTemplateValidated = true;
-              if (sessionListValidated) {
+              if (sessionListValidated && embeddingValidated) {
                 clearStageTimer('calls');
                 proc.kill();
                 process.exit(0);
               }
+            } else if (msg.id === 11) {
+              const hasId = parsed.entry_id && parsed.entry_id.length > 0;
+              console.log(hasId ? `[OK] lore entry created with id=${parsed.entry_id}` : '[WARN] lore creation missing entry_id');
+              embeddingValidated = false; // not validated yet, will validate from search
+            } else if (msg.id === 12) {
+              // Semantic search validation
+              const hasResults = Array.isArray(parsed.results);
+              const embeddingModel = parsed.embedding_model;
+              console.log(hasResults ? `[OK] semantic search returned ${parsed.results.length} results (model: ${embeddingModel || 'local'})` : '[WARN] semantic search missing results array');
+              embeddingValidated = true;
+              if (sessionListValidated && worldTemplateValidated) {
+                clearStageTimer('calls');
+                proc.kill();
+                process.exit(0);
+              }
+            } else if (msg.id === 10) {
+              // roleplay validation (optional, runs in parallel)
+              console.log('[OK] roleplay persona generated');
             }
           }
         } else if (msg.error) {

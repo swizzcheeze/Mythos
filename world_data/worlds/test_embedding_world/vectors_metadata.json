@@ -1,0 +1,30 @@
+{
+  "entries": [
+    {
+      "id": "cf462ce1-06a3-431a-94bd-2409b0ee50c9",
+      "topic": "Ancient Prophecy",
+      "index": 0
+    },
+    {
+      "id": "15c6c2a2-2e6f-47a8-bf9b-f317b441cd10",
+      "topic": "The Forbidden Ritual",
+      "index": 1
+    },
+    {
+      "id": "69948212-e188-4ca2-b6f3-38fa44c7429e",
+      "topic": "Crystal of Eternal Wisdom",
+      "index": 2
+    },
+    {
+      "id": "7137f7be-8e90-49a7-94c2-2cb06601cadb",
+      "topic": "Persistence Test",
+      "index": 3
+    },
+    {
+      "id": "730aad4c-df1c-47d4-8b4a-ed97b710b710",
+      "topic": "World1 Entry",
+      "index": 4
+    }
+  ],
+  "model_name": "all-MiniLM-L6-v2"
+}
