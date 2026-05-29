@@ -12,6 +12,7 @@ Rebuilt from the ground up with:
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 
@@ -54,24 +55,32 @@ async def lifespan(app: FastAPI):
     log.info("Mythos Backend starting up...")
     _install_healthz_filter()
 
-    # 1. Verify embedding service
+    # 1. Verify embedding service (2s timeout — port 8002 may be dead)
     try:
-        status = embedding.refresh_status()
+        status = await asyncio.wait_for(
+            asyncio.to_thread(embedding.refresh_status), timeout=2.0
+        )
         if status.enabled:
             log.info(f"Embedding: {status.source} ({status.model_name})")
         else:
             log.warning("Embedding service not available — semantic search disabled.")
+    except asyncio.TimeoutError:
+        log.warning("Embedding service check timed out — semantic search disabled.")
     except Exception as e:
         log.warning(f"Embedding service check failed: {e}")
 
-    # 2. Verify LLM provider
+    # 2. Verify LLM provider (3s timeout — ChatOllama init may probe Ollama)
     try:
         state = get_provider_state()
         active = [k for k, v in state.items() if v]
         log.info(f"LLM providers available: {active}")
-        test_llm = get_llm_for_generation()
+        test_llm = await asyncio.wait_for(
+            asyncio.to_thread(get_llm_for_generation), timeout=3.0
+        )
         if hasattr(test_llm, "invoke"):
             log.info("Ollama LLM handle created successfully.")
+    except asyncio.TimeoutError:
+        log.warning("LLM provider check timed out — will retry on first request.")
     except Exception as e:
         log.warning(f"LLM provider check failed: {e}")
 
@@ -89,7 +98,7 @@ async def lifespan(app: FastAPI):
     log.info("Mythos Backend shutting down.")
 
 
-# ── App ────────────────────────────────────────────────────────────────────
+# ── App ──────────────────────────────────────────────────────────────────────
 
 app = FastAPI(
     title="Mythos Backend",
@@ -107,7 +116,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Routers ────────────────────────────────────────────────────────────────
+# ── Routers ──────────────────────────────────────────────────────────────────
 
 app.include_router(entities_router)
 app.include_router(sessions_router)
@@ -120,7 +129,7 @@ app.include_router(admin_router)
 app.include_router(bridge_router)
 
 
-# ── Health check ───────────────────────────────────────────────────────────
+# ── Health check ───────────────────────────────────────────────────────────────
 
 @app.get("/healthz")
 def healthz():
@@ -137,7 +146,7 @@ def root():
     }
 
 
-# ── CLI entry point ────────────────────────────────────────────────────────
+# ── CLI entry point ─────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     import uvicorn

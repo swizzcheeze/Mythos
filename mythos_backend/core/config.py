@@ -9,13 +9,22 @@ from __future__ import annotations
 
 import os
 
-# ── Environment config (immutable after startup) ──────────────────────────
+# Load .env from the project root (two levels up from this file)
+try:
+    from dotenv import load_dotenv as _load_dotenv
+    import pathlib as _pathlib
+    _env_path = _pathlib.Path(__file__).resolve().parents[2] / ".env"
+    _load_dotenv(dotenv_path=_env_path, override=False)
+except ImportError:
+    pass
+
+# ── Environment config (immutable after startup) ────────────────────────────
 
 LORE_DB_BASE_PATH: str = os.getenv("LORE_DB_PATH", "world_data/lore_db.json")
 
 # Embedding config
 EMBEDDING_SERVICE_URL: str = os.getenv(
-    "EMBEDDING_SERVICE_URL", "http://host.docker.internal:8002"
+    "EMBEDDING_SERVICE_URL", "http://localhost:8002"
 )
 EMBEDDING_MODEL_NAME: str = "all-MiniLM-L6-v2"
 EMBEDDING_DIM: int = 384
@@ -24,7 +33,7 @@ COHERE_API_KEY: str | None = os.getenv("COHERE_API_KEY", None)
 # LLM provider config
 LLM_PROVIDER: str = os.getenv("MYTHOS_LLM_PROVIDER", "ollama").lower()
 OLLAMA_BASE_URL: str = os.getenv(
-    "MYTHOS_OLLAMA_BASE_URL", "http://host.docker.internal:11434"
+    "MYTHOS_OLLAMA_BASE_URL", "http://localhost:11434"
 )
 DEFAULT_OLLAMA_MODEL: str = os.getenv("MYTHOS_OLLAMA_MODEL", "llama3")
 DEFAULT_GENERATOR_MODEL: str = os.getenv("MYTHOS_GENERATOR_MODEL", "") or DEFAULT_OLLAMA_MODEL
