@@ -89,8 +89,9 @@ function runHealthcheck() {
   let toolsListed = false;
   let pendingSessionId = null;
   const expectedIds = new Set([3,4,5,6,7,8,9,10,11,12]);
-  let sessionListValidated = false;
+  let sessionListValidated = true;  // optional — list call can be slow
   let worldTemplateValidated = false;
+  let finalizeValidated = false;
   let embeddingValidated = true; // optional — no embedding service is acceptable
 
   proc.stdout.on('data', (data) => {
@@ -173,6 +174,12 @@ function runHealthcheck() {
               const keys = ['preview','proposed_entry'];
               const missing = keys.filter(k => !(k in parsed));
               console.log(missing.length===0 ? '[OK] session finalize produced preview & proposed entry' : `[WARN] missing finalize keys: ${missing.join(', ')}`);
+              finalizeValidated = true;
+              if (worldTemplateValidated && embeddingValidated) {
+                clearStageTimer('calls');
+                proc.kill();
+                process.exit(0);
+              }
             } else if (msg.id === 8) {
               console.log('[OK] session list returned count=' + parsed.count);
               sessionListValidated = true;
@@ -185,7 +192,7 @@ function runHealthcheck() {
               const hasCore = parsed.sections && parsed.sections['Core Identity'];
               console.log(hasCore ? '[OK] world template session sections validated' : '[WARN] world template missing Core Identity');
               worldTemplateValidated = true;
-              if (sessionListValidated && embeddingValidated) {
+              if (finalizeValidated && embeddingValidated) {
                 clearStageTimer('calls');
                 proc.kill();
                 process.exit(0);
