@@ -57,7 +57,7 @@ function sendSampleToolCall(proc) {
 function probeBackendHealth(timeoutMs = 3000) {
   return new Promise((resolve, reject) => {
     const port = process.env.MYTHOS_PORT || '8013';
-    const req = http.request(`http://localhost:${port}/healthz`, { method: 'GET' }, (res) => {
+    const req = http.request(`http://127.0.0.1:${port}/healthz`, { method: 'GET' }, (res) => {
       let body = '';
       res.on('data', c => body += c);
       res.on('end', () => {

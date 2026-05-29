@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Configuration for the Mythos Backend
-const BASE_URL = `http://localhost:${process.env.MYTHOS_PORT || '8013'}`;
+const BASE_URL = `http://127.0.0.1:${process.env.MYTHOS_PORT || '8013'}`;
 const http = require('http');
 
 // Tool definitions, mirroring the FastAPI backend's Pydantic models
