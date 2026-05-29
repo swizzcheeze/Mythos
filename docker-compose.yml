@@ -1,50 +1,57 @@
 services:
-  # --- Mythos World Engine (Self-Contained) ---
+  # --- Mythos World Engine ---
+  #
+  # Build variants (uncomment the dockerfile line):
+  #   mythos_backend/Dockerfile       — NVIDIA CUDA (default, GPU-enabled)
+  #   mythos_backend/Dockerfile.cpu   — CPU only, no GPU required (~150MB image)
+  #   mythos_backend/Dockerfile.rocm  — AMD ROCm (Linux only, ROCm-compatible GPU)
+  #
+  # Port is configurable via MYTHOS_PORT env var or .env file (default: 8013).
+  # For CPU/ROCm, comment out the 'devices' block under 'deploy'.
+  #
   mythos_backend:
     build:
-      context: ./mythos_backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: mythos_backend/Dockerfile
     container_name: mythos_backend
-    ports: 
-      - "8001:8001" # Exposing on port 8001
+    ports:
+      - "${MYTHOS_PORT:-8013}:${MYTHOS_PORT:-8013}"
     volumes:
-      - ./mythos_backend:/app 
-      # Volume for persistent lore data: maps D:\mythos\world_data on the host to /app/world_data in the container
-      # This ensures the lore_db.json file persists across container restarts.
+      - ./mythos_backend:/app/mythos_backend
       - ./world_data:/app/world_data
     working_dir: /app
     environment:
+      - MYTHOS_PORT=${MYTHOS_PORT:-8013}
       - LORE_DB_PATH=/app/world_data/lore_db.json
       - EMBEDDING_SERVICE_URL=http://host.docker.internal:8002
       - MYTHOS_MUTE_HEALTHZ_LOGS=1
       - MYTHOS_OLLAMA_BASE_URL=http://host.docker.internal:11434
-      # LLM Provider Configuration (choose: ollama, anthropic, openrouter, groq, xai, gemini)
       - MYTHOS_LLM_PROVIDER=${MYTHOS_LLM_PROVIDER:-ollama}
-      
-      # Anthropic API Configuration
+
+      # Anthropic
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
       - MYTHOS_ANTHROPIC_MODEL=${MYTHOS_ANTHROPIC_MODEL:-claude-3-5-sonnet-20241022}
-      
-      # OpenRouter API Configuration
+
+      # OpenRouter
       - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
       - MYTHOS_OPENROUTER_MODEL=${MYTHOS_OPENROUTER_MODEL:-anthropic/claude-3.5-sonnet}
-      
-      # Groq API Configuration
+
+      # Groq
       - GROQ_API_KEY=${GROQ_API_KEY:-}
       - MYTHOS_GROQ_MODEL=${MYTHOS_GROQ_MODEL:-llama-3.3-70b-versatile}
-      
-      # xAI (Grok) API Configuration
+
+      # xAI (Grok)
       - XAI_API_KEY=${XAI_API_KEY:-}
       - MYTHOS_XAI_MODEL=${MYTHOS_XAI_MODEL:-grok-beta}
-      
-      # Google Gemini API Configuration
+
+      # Google Gemini
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
       - MYTHOS_GEMINI_MODEL=${MYTHOS_GEMINI_MODEL:-gemini-1.5-pro}
-      
-      # Ollama Configuration (local models)
+
+      # Ollama (local)
       - MYTHOS_OLLAMA_MODEL=${MYTHOS_OLLAMA_MODEL:-llama3}
-      
-      # Advanced: Override models for specific tasks
+
+      # Advanced: per-task model overrides
       - MYTHOS_GENERATOR_MODEL=${MYTHOS_GENERATOR_MODEL:-}
       - MYTHOS_CRITIC_MODEL=${MYTHOS_CRITIC_MODEL:-}
     extra_hosts:
@@ -57,11 +64,8 @@ services:
               count: all
               capabilities: [gpu]
     healthcheck:
-      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://127.0.0.1:8001/healthz', timeout=2).status==200 else sys.exit(1)\""]
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://127.0.0.1:${MYTHOS_PORT:-8013}/healthz', timeout=2).status==200 else sys.exit(1)\""]
       interval: 30s
       timeout: 3s
       retries: 5
       start_period: 20s
-
-# No volumes section needed since there are no named volumes (like db_data)
-# All volumes are host-path mounts for persistence.
