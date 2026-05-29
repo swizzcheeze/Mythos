@@ -1,0 +1,25 @@
+# Mythos Backend — CPU only
+# For users without a GPU or who don't need GPU acceleration.
+# Lightweight: uses python:3.11-slim (~150MB vs ~4GB for CUDA image).
+#
+# Port is configurable via MYTHOS_PORT env var (default: 8013).
+FROM python:3.11-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV MYTHOS_PORT=8013
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy and install dependencies
+COPY mythos_backend/requirements.txt .
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy the application package
+COPY mythos_backend/ ./mythos_backend/
+
+# Run on the port configured via MYTHOS_PORT
+CMD ["sh", "-c", "uvicorn mythos_backend.main:app --host 0.0.0.0 --port ${MYTHOS_PORT:-8013} --workers 1 --no-access-log"]
