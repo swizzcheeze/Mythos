@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-// Configuration for the Mythos Backend running in Docker
-const BASE_URL = 'http://localhost:8001'; 
+// Configuration for the Mythos Backend
+const BASE_URL = `http://localhost:${process.env.MYTHOS_PORT || '8013'}`;
 const http = require('http');
 
 // Tool definitions, mirroring the FastAPI backend's Pydantic models
@@ -294,8 +294,7 @@ async function handleToolCall(toolName, args) {
     });
 
     req.on('error', (e) => {
-      // Critical error: The bridge cannot connect to the Docker container.
-      reject({ error: `[CRITICAL] Could not connect to Mythos Backend on port 8001. Is 'docker compose up' running?`, details: e.message });
+      reject({ error: `[CRITICAL] Could not connect to Mythos Backend. Is the backend running on port ${process.env.MYTHOS_PORT || '8013'}?`, details: e.message });
     });
 
     req.write(data);
@@ -308,12 +307,12 @@ function formatSessionToolOutput(toolName, result, args) {
   const showRaw = process.env.MYTHOS_SHOW_JSON === '1';
   const enableColor = process.env.MYTHOS_COLOR !== '0';
   const colors = enableColor ? {
-    green: '\u001b[32m',
-    yellow: '\u001b[33m',
-    red: '\u001b[31m',
-    cyan: '\u001b[36m',
-    magenta: '\u001b[35m',
-    reset: '\u001b[0m'
+    green: '[32m',
+    yellow: '[33m',
+    red: '[31m',
+    cyan: '[36m',
+    magenta: '[35m',
+    reset: '[0m'
   } : { green:'', yellow:'', red:'', cyan:'', magenta:'', reset:'' };
   function colorizePct(pct) {
     if (!enableColor) return pct + '%';
@@ -387,7 +386,6 @@ function formatSessionToolOutput(toolName, result, args) {
     if (toolName === 'mythos_creation_session_update') {
       const { session_id, progress, filled, message } = result;
       const { completed_fields, total_fields } = progress || { completed_fields: 0, total_fields: 0 };
-      // Show only recently updated sections (from args.updates)
       const updatedSections = Object.keys(args.updates || {});
       const lines = [];
       lines.push(`${message} (Session: ${session_id})`);
@@ -402,7 +400,6 @@ function formatSessionToolOutput(toolName, result, args) {
             lines.push(` - ${field}:`);
             for (const item of val) lines.push(`    • ${item}`);
           } else if (typeof val === 'string') {
-            // Expand semicolon list into bullets for readability
             if (val.includes(';')) {
               const parts = val.split(';').map(p => p.trim()).filter(Boolean);
               if (parts.length > 1) {
@@ -419,7 +416,6 @@ function formatSessionToolOutput(toolName, result, args) {
           }
         }
       }
-      // Global remaining summary (sections now included in update response)
       const stats = remainingGlobal(result.sections || {}, filled);
       lines.push(`\nRemaining fields: ${stats.remaining} of ${stats.total}`);
       lines.push('Per-section progress:');
@@ -431,7 +427,6 @@ function formatSessionToolOutput(toolName, result, args) {
       const { id, template_type, style, sections, filled, prompts } = result;
       const lines = [];
       lines.push(`Session ${id} | Type: ${template_type} | Style: ${style}`);
-      // Determine completion stats
       let total = 0, done = 0;
       for (const sec of Object.keys(sections||{})) {
         total += sections[sec].length;
@@ -486,28 +481,23 @@ function formatSessionToolOutput(toolName, result, args) {
       const lines = [];
       lines.push('Finalize Preview (ready to save via create lore entry):');
       lines.push('');
-      // Preview already preformatted by backend
       lines.push(preview.trim());
       if (proposed_entry) {
         lines.push('\nSuggested Topic: ' + proposed_entry.topic);
         lines.push('Suggested Tags: ' + (proposed_entry.tags || []).join(', '));
       }
-      // Quick remaining summary extracted from preview by counting '[ ]'
       const emptyCount = preview.split('\n').filter(l => /\[ \]/.test(l)).length;
       lines.push(`\nEmpty slots remaining: ${emptyCount}`);
       lines.push('\nIf satisfied: call mythos_create_lore_entry with proposed_entry details.');
       return lines.join('\n');
     }
-    // Non-session tools: fall back to JSON text
     return JSON.stringify(result, null, 2);
   } catch (e) {
-    // Fallback safety
     return JSON.stringify(result, null, 2);
   }
 }
 
 // === MCP Stdio Protocol Implementation ===
-// Allow overriding the MCP protocol via env; default to a widely supported version.
 const MCP_PROTOCOL_VERSION = process.env.MYTHOS_MCP_PROTOCOL || '2024-10-07';
 process.stdin.setEncoding('utf8');
 
@@ -540,7 +530,6 @@ process.stdin.on('data', async (chunk) => {
             result: { content: [{ type: 'text', text: formatted }] }
           }) + '\n');
         } catch (err) {
-          // Return an error tied to the request id rather than throwing a parse error
           process.stdout.write(JSON.stringify({
             jsonrpc: '2.0',
             id: request.id,
@@ -548,8 +537,6 @@ process.stdin.on('data', async (chunk) => {
           }) + '\n');
         }
       } else if (request.method === 'initialize') {
-        // Negotiate protocol with LM Studio: use env override or fallback default.
-        // LM Studio log shows unsupported: 2024-11-01, so avoid that newer version.
         process.stdout.write(JSON.stringify({
           jsonrpc: '2.0',
           id: request.id,
@@ -567,7 +554,6 @@ process.stdin.on('data', async (chunk) => {
           }
         }) + '\n');
       } else {
-        // Handle unknown methods
         process.stdout.write(JSON.stringify({
           jsonrpc: '2.0',
           id: request.id,
@@ -575,7 +561,6 @@ process.stdin.on('data', async (chunk) => {
         }) + '\n');
       }
     } catch (e) {
-      // General error handling for bad JSON or unexpected issues
       process.stdout.write(JSON.stringify({
         jsonrpc: '2.0',
         id: null,
