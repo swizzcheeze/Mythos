@@ -14,7 +14,6 @@ venv/
 env/
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -22,10 +21,6 @@ env/
 # OS
 .DS_Store
 Thumbs.db
-
-# Large binaries
-*.sh
-Miniforge3-*.sh
 
 # Local env files
 .env

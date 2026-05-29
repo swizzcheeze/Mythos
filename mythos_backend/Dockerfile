@@ -1,4 +1,8 @@
-# Base image with CUDA support for GPU embeddings (with CPU fallback)
+# Mythos Backend — NVIDIA CUDA (default)
+# For NVIDIA GPU users. Supports GPU-accelerated embeddings with CPU fallback.
+#
+# Port is configurable via MYTHOS_PORT env var (default: 8013).
+# Build context must be the repo root (.), not this directory.
 FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04
 
 # Install Python 3.11
@@ -16,6 +20,7 @@ RUN rm -f /usr/bin/python /usr/bin/pip && \
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV MYTHOS_PORT=8013
 # Fix for torch multiprocessing issues in Docker
 ENV OMP_NUM_THREADS=1
 ENV MKL_NUM_THREADS=1
@@ -32,5 +37,5 @@ RUN pip install --upgrade pip setuptools wheel && \
 # Copy the application package
 COPY mythos_backend/ ./mythos_backend/
 
-# The command to run the Uvicorn server (FastAPI) on port 8001
-CMD ["uvicorn", "mythos_backend.main:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "1", "--no-access-log"]
+# Run on the port configured via MYTHOS_PORT
+CMD ["sh", "-c", "uvicorn mythos_backend.main:app --host 0.0.0.0 --port ${MYTHOS_PORT:-8013} --workers 1 --no-access-log"]
