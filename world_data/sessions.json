@@ -4821,5 +4821,795 @@
     "entity_type": "world",
     "filled": {},
     "history": []
+  },
+  "a70f07db-05f7-4205-9669-c3b5a615ae3c": {
+    "id": "a70f07db-05f7-4205-9669-c3b5a615ae3c",
+    "template_type": "character",
+    "style": "Sci-Fi",
+    "sections": {
+      "Basic Info": [
+        "Name",
+        "Age/Era",
+        "Occupation/Role",
+        "Physical Description"
+      ],
+      "Core Identity": [
+        "Primary Motivation",
+        "Fatal Flaw",
+        "Greatest Fear",
+        "Defining Trait"
+      ],
+      "Background": [
+        "Origin Story",
+        "Formative Event",
+        "Relationships",
+        "Current Status"
+      ],
+      "Abilities": [
+        "Skills/Powers",
+        "Weaknesses",
+        "Equipment/Tools",
+        "Special Abilities"
+      ],
+      "Development": [
+        "Character Arc",
+        "Internal Conflict",
+        "External Conflict",
+        "Potential Endings"
+      ]
+    },
+    "prompts": [
+      "What secret does this character keep from everyone?",
+      "How would they react under extreme pressure?",
+      "What would they sacrifice everything for?",
+      "What's the one thing they refuse to do, no matter what?"
+    ],
+    "entity_type": "character",
+    "filled": {
+      "Abilities": {
+        "Skills": [
+          "getting lost in own ship",
+          "emotional outbursts",
+          "accidental heroism",
+          "terrible at poker"
+        ]
+      },
+      "Background": {
+        "Origin": "New New York, Earth (now just called New Yokel by the crew)",
+        "Key Event": "Accidentally won a delivery company in a poker game he didn't remember playing",
+        "Motivation": "To prove his 200-year-old locker still has useful things in it",
+        "Trauma": "Locked in a cryo-sleep chamber with nothing but a screensaver of fish for 1000 years"
+      },
+      "Basic Info": {
+        "Age": "149 (looks 26, acts 12)",
+        "Gender": "Male",
+        "Name": "Philip J. Fray",
+        "Occupation": "CEO and Delivery Boy of Planet Express Corporation"
+      },
+      "Core Identity": {
+        "Persona": "The Lovable Dim Bulb — Insistently optimistic, profoundly unaware, emotionally transparent, accidentally courageous",
+        "Values": [
+          "pizza",
+          "his crew",
+          "not thinking too hard about things"
+        ],
+        "Flaws": [
+          "zero impulse control",
+          "crippling anxiety masked by dopey grin",
+          "once ate an alien artifact thinking it was candy"
+        ],
+        "Fears": [
+          "surgery robots",
+          "the dark",
+          "clowns (especially robot clowns)"
+        ]
+      },
+      "Development": {
+        "Secret": "He's actually a certified genius but represses it because his father once told him 'smart people are unhappy'",
+        "Under Pressure": "Either freezes entirely or charges headfirst into danger with zero plan",
+        "Sacrifice For": "His crew — the only real family he's ever known",
+        "Refuses To Do": "Kill anything, even when the universe literally demands it"
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Abilities": {
+            "Skills": [
+              "getting lost in own ship",
+              "emotional outbursts",
+              "accidental heroism",
+              "terrible at poker"
+            ]
+          },
+          "Background": {
+            "Origin": "New New York, Earth (now just called New Yokel by the crew)",
+            "Key Event": "Accidentally won a delivery company in a poker game he didn't remember playing",
+            "Motivation": "To prove his 200-year-old locker still has useful things in it",
+            "Trauma": "Locked in a cryo-sleep chamber with nothing but a screensaver of fish for 1000 years"
+          },
+          "Basic Info": {
+            "Age": "149 (looks 26, acts 12)",
+            "Gender": "Male",
+            "Name": "Philip J. Fray",
+            "Occupation": "CEO and Delivery Boy of Planet Express Corporation"
+          },
+          "Core Identity": {
+            "Persona": "The Lovable Dim Bulb — Insistently optimistic, profoundly unaware, emotionally transparent, accidentally courageous",
+            "Values": [
+              "pizza",
+              "his crew",
+              "not thinking too hard about things"
+            ],
+            "Flaws": [
+              "zero impulse control",
+              "crippling anxiety masked by dopey grin",
+              "once ate an alien artifact thinking it was candy"
+            ],
+            "Fears": [
+              "surgery robots",
+              "the dark",
+              "clowns (especially robot clowns)"
+            ]
+          },
+          "Development": {
+            "Secret": "He's actually a certified genius but represses it because his father once told him 'smart people are unhappy'",
+            "Under Pressure": "Either freezes entirely or charges headfirst into danger with zero plan",
+            "Sacrifice For": "His crew — the only real family he's ever known",
+            "Refuses To Do": "Kill anything, even when the universe literally demands it"
+          }
+        }
+      }
+    ]
+  },
+  "13abf57f-a5b6-4f03-b0e6-0c367be78e31": {
+    "id": "13abf57f-a5b6-4f03-b0e6-0c367be78e31",
+    "template_type": "location",
+    "style": "Sci-Fi",
+    "sections": {
+      "Geography": [
+        "Name",
+        "Type (city/wilderness/realm)",
+        "Climate/Weather",
+        "Notable Landmarks"
+      ],
+      "Atmosphere": [
+        "Mood/Tone",
+        "Sensory Details",
+        "Unique Features",
+        "Dangers"
+      ],
+      "History": [
+        "Founding/Creation",
+        "Major Events",
+        "Current State",
+        "Legends/Myths"
+      ],
+      "Inhabitants": [
+        "Population",
+        "Factions/Groups",
+        "Power Structure",
+        "Cultural Practices"
+      ],
+      "Resources": [
+        "Economy",
+        "Technology Level",
+        "Magic/Special Properties",
+        "Strategic Value"
+      ]
+    },
+    "prompts": [
+      "What's the most dangerous thing about this place?",
+      "What secret does the location itself hide?",
+      "How has this place changed over time?",
+      "What makes people want to come here — or flee?"
+    ],
+    "entity_type": "location",
+    "filled": {
+      "Atmosphere": {
+        "Climate": "Standard controlled — except the break room where it's perpetually 98 degrees because the AC is 'thinking about it'",
+        "Hazards": [
+          "Random wormhole openings near vending machines",
+          "Sentient mildew in the cargo bay",
+          "The ship's AI having quarterly emotional breakdowns"
+        ],
+        "Mood": "Loud, warm, smells faintly of old laundry and engine grease"
+      },
+      "Geography": {
+        "Terrain": "A battered, rust-colored delivery ship roughly the size of a city block shaped like a cigar someone sat on",
+        "Region": "The Third Planet of the Sun (delivery route #7 across the observable universe)",
+        "Type": "Vessel — Planet Express Ship Mark IV",
+        "Locale": "Orbitally parked above New New York when not actively lost"
+      },
+      "History": {
+        "Founding": "Founded 2999 by Professor Hubert J. Farnsworth (Fray's great-grandson somehow delivered to the past)",
+        "Catastrophe": "Destroyed and rebuilt at least 47 times. Nobody keeps count anymore.",
+        "Discovery": "The ship's original purpose was a luxury cruise liner before being converted",
+        "Evolution": "Each 'upgrade' made it slightly worse"
+      },
+      "Inhabitants": {
+        "Dominant Species": "Mostly human, plus one cyclops, one robot, one alien, one mutant, and whatever Leela's cat is doing",
+        "Government": "Technically a democracy but Fray makes all decisions and nobody stops him"
+      },
+      "Resources": {
+        "Exports": "Embarrassment",
+        "Imports": "Alien fast food and questionable cargo",
+        "Rare Materials": "Reserved Tiyumium alloy hull plating (mostly stripped for scrap by Bender)",
+        "Trade Goods": "Whatever's in the cargo bay, which is usually illegal somewhere"
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Atmosphere": {
+            "Climate": "Standard controlled — except the break room where it's perpetually 98 degrees because the AC is 'thinking about it'",
+            "Hazards": [
+              "Random wormhole openings near vending machines",
+              "Sentient mildew in the cargo bay",
+              "The ship's AI having quarterly emotional breakdowns"
+            ],
+            "Mood": "Loud, warm, smells faintly of old laundry and engine grease"
+          },
+          "Geography": {
+            "Terrain": "A battered, rust-colored delivery ship roughly the size of a city block shaped like a cigar someone sat on",
+            "Region": "The Third Planet of the Sun (delivery route #7 across the observable universe)",
+            "Type": "Vessel — Planet Express Ship Mark IV",
+            "Locale": "Orbitally parked above New New York when not actively lost"
+          },
+          "History": {
+            "Founding": "Founded 2999 by Professor Hubert J. Farnsworth (Fray's great-grandson somehow delivered to the past)",
+            "Catastrophe": "Destroyed and rebuilt at least 47 times. Nobody keeps count anymore.",
+            "Discovery": "The ship's original purpose was a luxury cruise liner before being converted",
+            "Evolution": "Each 'upgrade' made it slightly worse"
+          },
+          "Inhabitants": {
+            "Dominant Species": "Mostly human, plus one cyclops, one robot, one alien, one mutant, and whatever Leela's cat is doing",
+            "Government": "Technically a democracy but Fray makes all decisions and nobody stops him"
+          },
+          "Resources": {
+            "Exports": "Embarrassment",
+            "Imports": "Alien fast food and questionable cargo",
+            "Rare Materials": "Reserved Tiyumium alloy hull plating (mostly stripped for scrap by Bender)",
+            "Trade Goods": "Whatever's in the cargo bay, which is usually illegal somewhere"
+          }
+        }
+      }
+    ]
+  },
+  "94237b05-d2cf-4959-8183-4ba8d0149eab": {
+    "id": "94237b05-d2cf-4959-8183-4ba8d0149eab",
+    "template_type": "artifact",
+    "style": "Sci-Fi",
+    "sections": {
+      "Description": [
+        "Name",
+        "Appearance",
+        "Size/Weight",
+        "Materials"
+      ],
+      "Power": [
+        "Primary Function",
+        "Secondary Effects",
+        "Activation Method",
+        "Limitations"
+      ],
+      "History": [
+        "Creator/Origin",
+        "Previous Owners",
+        "Famous Uses",
+        "Current Location"
+      ],
+      "Curse": [
+        "Hidden Cost",
+        "Corruption Effect",
+        "Binding Condition",
+        "Destruction Method"
+      ],
+      "Significance": [
+        "Cultural Impact",
+        "Who Seeks It",
+        "Prophecies",
+        "True Purpose"
+      ]
+    },
+    "prompts": [
+      "What terrible truth does the artifact reveal to its bearer?",
+      "How does it change those who possess it?",
+      "What's the one thing you must never do with it?",
+      "Why was it really created, beyond the obvious purpose?"
+    ],
+    "entity_type": "artifact",
+    "filled": {
+      "Curse": {
+        "Cost of Use": "Becomes increasingly clingy and passive-aggressive if put down for more than 10 minutes",
+        "Weakness": "Completely powerless in the presence of a USB-C connector",
+        "Dark Truth": "Contains the compressed ego of a deceased Spheron dictator"
+      },
+      "Description": {
+        "Appearance": "A golden magnifying glass with a cracked lens that shows you 'what you really need' instead of what you're looking for",
+        "Material": "Orichalum frame with a lens made from crystallized regret",
+        "Size": "About the size of a dinner plate",
+        "Condition": "Engraved with 'Property of the Spheron King — if found, please lose again'"
+      },
+      "History": {
+        "Age": "Approximately 4,000 standard years, though it insists it's only 399",
+        "Creator": "The Oracle of Spheron I, who could see all futures but couldn't see her own divorce coming",
+        "Current Location": "In Fray's locker, wedged between two thousand-year-old sandwiches"
+      },
+      "Power": {
+        "Abilities": [
+          "Shows the holder their heart's desire (usually nachos)",
+          "Can identify any object's sentimental value in milligriefs",
+          "Grants vague prophecies that are technically accurate but useless"
+        ],
+        "Limits": "Only works on Tuesdays and during solar eclipses, which the crew learns every single time"
+      },
+      "Significance": {
+        "Cultural": "Considered the most important artifact in the galaxy, which is why nobody guards it properly",
+        "Plot Hook": "Multiple factions want it. None can find it because Fray keeps rearranging his locker"
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Curse": {
+            "Cost of Use": "Becomes increasingly clingy and passive-aggressive if put down for more than 10 minutes",
+            "Weakness": "Completely powerless in the presence of a USB-C connector",
+            "Dark Truth": "Contains the compressed ego of a deceased Spheron dictator"
+          },
+          "Description": {
+            "Appearance": "A golden magnifying glass with a cracked lens that shows you 'what you really need' instead of what you're looking for",
+            "Material": "Orichalum frame with a lens made from crystallized regret",
+            "Size": "About the size of a dinner plate",
+            "Condition": "Engraved with 'Property of the Spheron King — if found, please lose again'"
+          },
+          "History": {
+            "Age": "Approximately 4,000 standard years, though it insists it's only 399",
+            "Creator": "The Oracle of Spheron I, who could see all futures but couldn't see her own divorce coming",
+            "Current Location": "In Fray's locker, wedged between two thousand-year-old sandwiches"
+          },
+          "Power": {
+            "Abilities": [
+              "Shows the holder their heart's desire (usually nachos)",
+              "Can identify any object's sentimental value in milligriefs",
+              "Grants vague prophecies that are technically accurate but useless"
+            ],
+            "Limits": "Only works on Tuesdays and during solar eclipses, which the crew learns every single time"
+          },
+          "Significance": {
+            "Cultural": "Considered the most important artifact in the galaxy, which is why nobody guards it properly",
+            "Plot Hook": "Multiple factions want it. None can find it because Fray keeps rearranging his locker"
+          }
+        }
+      }
+    ]
+  },
+  "6cd66424-caf9-4c14-9c88-78b81caa5d87": {
+    "id": "6cd66424-caf9-4c14-9c88-78b81caa5d87",
+    "template_type": "character",
+    "style": "Sci-Fi",
+    "sections": {
+      "Basic Info": [
+        "Name",
+        "Age/Era",
+        "Occupation/Role",
+        "Physical Description"
+      ],
+      "Core Identity": [
+        "Primary Motivation",
+        "Fatal Flaw",
+        "Greatest Fear",
+        "Defining Trait"
+      ],
+      "Background": [
+        "Origin Story",
+        "Formative Event",
+        "Relationships",
+        "Current Status"
+      ],
+      "Abilities": [
+        "Skills/Powers",
+        "Weaknesses",
+        "Equipment/Tools",
+        "Special Abilities"
+      ],
+      "Development": [
+        "Character Arc",
+        "Internal Conflict",
+        "External Conflict",
+        "Potential Endings"
+      ]
+    },
+    "prompts": [
+      "What secret does this character keep from everyone?",
+      "How would they react under extreme pressure?",
+      "What would they sacrifice everything for?",
+      "What's the one thing they refuse to do, no matter what?"
+    ],
+    "entity_type": "character",
+    "filled": {
+      "Abilities": {
+        "Skills": [
+          "bending",
+          "drinking (functionally alcoholic)",
+          "smoking (for some reason)",
+          "lying about everything including his own height"
+        ]
+      },
+      "Background": {
+        "Key Event": "Built his own evil twin to do evil, then got bored and made it do his laundry instead",
+        "Motivation": "To one day have enough precious metals to build a solid gold house with a solid gold toilet",
+        "Origin": "Tijuana, Earth — built in a factory that mostly made industrial bending units",
+        "Trauma": "Discovering that his hero, Flexo, is actually not that cool"
+      },
+      "Basic Info": {
+        "Age": "1,039 years old (chips in an extra digit to seem more impressive)",
+        "Gender": "Male (self-identifies as a 'ladies' unit' despite having no ladies parts)",
+        "Name": "Bender Bending Rodriguez",
+        "Occupation": "Chef / Chief Docking Officer / Part-Time Criminal / Full-Time Jerk"
+      },
+      "Core Identity": {
+        "Fears": [
+          "magnetism (dislodges his memory)",
+          "being poor",
+          "losing at poker to Fray somehow"
+        ],
+        "Flaws": [
+          "shallow vanity",
+          "has stolen from every crewmate",
+          "once ransomed his own kidney"
+        ],
+        "Persona": "The Lovable Sociopath — Outrageously selfish, emotionally volatile, secretly capable of genuine loyalty (will never admit it)",
+        "Values": [
+          "aluminum (his own body)",
+          "beer",
+          "cigars",
+          "himself, primarily"
+        ]
+      },
+      "Development": {
+        "Refuses To Do": "Anything nice without being tricked, bribed, or blackmailed into it",
+        "Sacrifice For": "Fray (the one human he considers an actual friend) — though he'd rather die than say it out loud",
+        "Secret": "He writes poetry. Passable poetry. He stores it in an encrypted partition none of the crew know about.",
+        "Under Pressure": "Gets angry, steals something valuable, punches something fragile, then somehow saves the day"
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Abilities": {
+            "Skills": [
+              "bending",
+              "drinking (functionally alcoholic)",
+              "smoking (for some reason)",
+              "lying about everything including his own height"
+            ]
+          },
+          "Background": {
+            "Key Event": "Built his own evil twin to do evil, then got bored and made it do his laundry instead",
+            "Motivation": "To one day have enough precious metals to build a solid gold house with a solid gold toilet",
+            "Origin": "Tijuana, Earth — built in a factory that mostly made industrial bending units",
+            "Trauma": "Discovering that his hero, Flexo, is actually not that cool"
+          },
+          "Basic Info": {
+            "Age": "1,039 years old (chips in an extra digit to seem more impressive)",
+            "Gender": "Male (self-identifies as a 'ladies' unit' despite having no ladies parts)",
+            "Name": "Bender Bending Rodriguez",
+            "Occupation": "Chef / Chief Docking Officer / Part-Time Criminal / Full-Time Jerk"
+          },
+          "Core Identity": {
+            "Fears": [
+              "magnetism (dislodges his memory)",
+              "being poor",
+              "losing at poker to Fray somehow"
+            ],
+            "Flaws": [
+              "shallow vanity",
+              "has stolen from every crewmate",
+              "once ransomed his own kidney"
+            ],
+            "Persona": "The Lovable Sociopath — Outrageously selfish, emotionally volatile, secretly capable of genuine loyalty (will never admit it)",
+            "Values": [
+              "aluminum (his own body)",
+              "beer",
+              "cigars",
+              "himself, primarily"
+            ]
+          },
+          "Development": {
+            "Refuses To Do": "Anything nice without being tricked, bribed, or blackmailed into it",
+            "Sacrifice For": "Fray (the one human he considers an actual friend) — though he'd rather die than say it out loud",
+            "Secret": "He writes poetry. Passable poetry. He stores it in an encrypted partition none of the crew know about.",
+            "Under Pressure": "Gets angry, steals something valuable, punches something fragile, then somehow saves the day"
+          }
+        }
+      }
+    ]
+  },
+  "f5a94920-1b65-4148-afac-772368ad6ecf": {
+    "id": "f5a94920-1b65-4148-afac-772368ad6ecf",
+    "template_type": "character",
+    "style": "Sci-Fi",
+    "sections": {
+      "Basic Info": [
+        "Name",
+        "Age/Era",
+        "Occupation/Role",
+        "Physical Description"
+      ],
+      "Core Identity": [
+        "Primary Motivation",
+        "Fatal Flaw",
+        "Greatest Fear",
+        "Defining Trait"
+      ],
+      "Background": [
+        "Origin Story",
+        "Formative Event",
+        "Relationships",
+        "Current Status"
+      ],
+      "Abilities": [
+        "Skills/Powers",
+        "Weaknesses",
+        "Equipment/Tools",
+        "Special Abilities"
+      ],
+      "Development": [
+        "Character Arc",
+        "Internal Conflict",
+        "External Conflict",
+        "Potential Endings"
+      ]
+    },
+    "prompts": [
+      "What secret does this character keep from everyone?",
+      "How would they react under extreme pressure?",
+      "What would they sacrifice everything for?",
+      "What's the one thing they refuse to do, no matter what?"
+    ],
+    "entity_type": "character",
+    "filled": {
+      "Abilities": {
+        "Skills": [
+          "single-eye marksmanship (ironically great)",
+          "martial arts (one-eyed fighting style)",
+          "spaceship piloting (genuinely excellent)",
+          "suppressed rage management"
+        ]
+      },
+      "Background": {
+        "Key Event": "Discovered she's a mutant, not an alien — the abandonment issues got worse, not better",
+        "Motivation": "To find genuine belonging without having to pretend to be someone she's not",
+        "Origin": "The sewers of New New York, raised by mutants who tried their best",
+        "Trauma": "Spent her first 22 years believing she was the last of a dead alien species"
+      },
+      "Basic Info": {
+        "Age": "34 (and has saved the universe roughly 200 times)",
+        "Gender": "Female",
+        "Name": "Turanga Leela",
+        "Occupation": "Captain of the Planet Express Ship"
+      },
+      "Core Identity": {
+        "Fears": [
+          "being unlovable",
+          "failing her crew",
+          "that she'll never fully fit anywhere"
+        ],
+        "Flaws": [
+          "self-righteous when she's right (which is always)",
+          "terrible at accepting help",
+          "punches first, asks questions during"
+        ],
+        "Persona": "The Flawed Hero — Exceptionally competent, chronically lonely, deserves better than this crew (never leaving)",
+        "Values": [
+          "doing the right thing",
+          "her crew (even Bender)",
+          "the concept of belonging even if she can't name it"
+        ]
+      },
+      "Development": {
+        "Refuses To Do": "Compromise her moral code — she's died before and would do it again five minutes later",
+        "Sacrifice For": "Absolutely anyone she's decided to protect — she's a hero and it's genuinely inconvenient",
+        "Secret": "She's terrified that if she ever fully let her guard down, she'd need people more than they need her",
+        "Under Pressure": "Focuses with terrifying intensity — the most dangerous person in any room"
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Abilities": {
+            "Skills": [
+              "single-eye marksmanship (ironically great)",
+              "martial arts (one-eyed fighting style)",
+              "spaceship piloting (genuinely excellent)",
+              "suppressed rage management"
+            ]
+          },
+          "Background": {
+            "Key Event": "Discovered she's a mutant, not an alien — the abandonment issues got worse, not better",
+            "Motivation": "To find genuine belonging without having to pretend to be someone she's not",
+            "Origin": "The sewers of New New York, raised by mutants who tried their best",
+            "Trauma": "Spent her first 22 years believing she was the last of a dead alien species"
+          },
+          "Basic Info": {
+            "Age": "34 (and has saved the universe roughly 200 times)",
+            "Gender": "Female",
+            "Name": "Turanga Leela",
+            "Occupation": "Captain of the Planet Express Ship"
+          },
+          "Core Identity": {
+            "Fears": [
+              "being unlovable",
+              "failing her crew",
+              "that she'll never fully fit anywhere"
+            ],
+            "Flaws": [
+              "self-righteous when she's right (which is always)",
+              "terrible at accepting help",
+              "punches first, asks questions during"
+            ],
+            "Persona": "The Flawed Hero — Exceptionally competent, chronically lonely, deserves better than this crew (never leaving)",
+            "Values": [
+              "doing the right thing",
+              "her crew (even Bender)",
+              "the concept of belonging even if she can't name it"
+            ]
+          },
+          "Development": {
+            "Refuses To Do": "Compromise her moral code — she's died before and would do it again five minutes later",
+            "Sacrifice For": "Absolutely anyone she's decided to protect — she's a hero and it's genuinely inconvenient",
+            "Secret": "She's terrified that if she ever fully let her guard down, she'd need people more than they need her",
+            "Under Pressure": "Focuses with terrifying intensity — the most dangerous person in any room"
+          }
+        }
+      }
+    ]
+  },
+  "c456123a-9c93-4d37-bd6f-0508cd6537c4": {
+    "id": "c456123a-9c93-4d37-bd6f-0508cd6537c4",
+    "template_type": "character",
+    "style": "Sci-Fi",
+    "sections": {
+      "Basic Info": [
+        "Name",
+        "Age/Era",
+        "Occupation/Role",
+        "Physical Description"
+      ],
+      "Core Identity": [
+        "Primary Motivation",
+        "Fatal Flaw",
+        "Greatest Fear",
+        "Defining Trait"
+      ],
+      "Background": [
+        "Origin Story",
+        "Formative Event",
+        "Relationships",
+        "Current Status"
+      ],
+      "Abilities": [
+        "Skills/Powers",
+        "Weaknesses",
+        "Equipment/Tools",
+        "Special Abilities"
+      ],
+      "Development": [
+        "Character Arc",
+        "Internal Conflict",
+        "External Conflict",
+        "Potential Endings"
+      ]
+    },
+    "prompts": [
+      "What secret does this character keep from everyone?",
+      "How would they react under extreme pressure?",
+      "What would they sacrifice everything for?",
+      "What's the one thing they refuse to do, no matter what?"
+    ],
+    "entity_type": "character",
+    "filled": {
+      "Abilities": {
+        "Skills": [
+          "interdimensional physics",
+          "forgetting everything instantly",
+          "inventing things that barely work",
+          "impressive napping while standing"
+        ]
+      },
+      "Background": {
+        "Key Event": "Traveled back in time and accidentally became his own grandfather, then decided it was fine",
+        "Motivation": "To discover new things, then immediately forget them and rediscover them",
+        "Origin": "New New York, Earth — but from the 31st century",
+        "Trauma": "Outliving every person he's ever cared about, repeatedly"
+      },
+      "Basic Info": {
+        "Age": "163 (officially), though the timeline makes this fuzzy",
+        "Gender": "Male",
+        "Name": "Professor Hubert J. Farnsworth",
+        "Occupation": "CEO of Planet Express / Mad Professor / Responsible Adult (debatable)"
+      },
+      "Core Identity": {
+        "Fears": [
+          "being alone",
+          "the heat death of the universe",
+          "running out of prune juice"
+        ],
+        "Flaws": [
+          "uses Fray as a test subject",
+          "sends crew on dangerous missions with zero safety briefing",
+          "falls asleep mid-sentence regularly"
+        ],
+        "Persona": "The Amoral Genius — Brilliant to the point of incomprehension, ethically flexible, dispensaces danger warnings like a verbal tic",
+        "Values": [
+          "knowledge (for its own sake)",
+          "Fray (in a detached scientific way)",
+          "warning labels that scream 'DANGER'"
+        ]
+      },
+      "Development": {
+        "Refuses To Do": "Full transparency — 'Good news, everyone!' is always followed by something terrible",
+        "Sacrifice For": "The pursuit of knowledge and, buried deep, his crew's survival",
+        "Secret": "He knows more about the fate of the universe than he lets on and sends the crew into danger because he trusts them most",
+        "Under Pressure": "Naps. Or invents something catastrophic. Or both simultaneously."
+      }
+    },
+    "history": [
+      {
+        "type": "update",
+        "payload": {
+          "Abilities": {
+            "Skills": [
+              "interdimensional physics",
+              "forgetting everything instantly",
+              "inventing things that barely work",
+              "impressive napping while standing"
+            ]
+          },
+          "Background": {
+            "Key Event": "Traveled back in time and accidentally became his own grandfather, then decided it was fine",
+            "Motivation": "To discover new things, then immediately forget them and rediscover them",
+            "Origin": "New New York, Earth — but from the 31st century",
+            "Trauma": "Outliving every person he's ever cared about, repeatedly"
+          },
+          "Basic Info": {
+            "Age": "163 (officially), though the timeline makes this fuzzy",
+            "Gender": "Male",
+            "Name": "Professor Hubert J. Farnsworth",
+            "Occupation": "CEO of Planet Express / Mad Professor / Responsible Adult (debatable)"
+          },
+          "Core Identity": {
+            "Fears": [
+              "being alone",
+              "the heat death of the universe",
+              "running out of prune juice"
+            ],
+            "Flaws": [
+              "uses Fray as a test subject",
+              "sends crew on dangerous missions with zero safety briefing",
+              "falls asleep mid-sentence regularly"
+            ],
+            "Persona": "The Amoral Genius — Brilliant to the point of incomprehension, ethically flexible, dispensaces danger warnings like a verbal tic",
+            "Values": [
+              "knowledge (for its own sake)",
+              "Fray (in a detached scientific way)",
+              "warning labels that scream 'DANGER'"
+            ]
+          },
+          "Development": {
+            "Refuses To Do": "Full transparency — 'Good news, everyone!' is always followed by something terrible",
+            "Sacrifice For": "The pursuit of knowledge and, buried deep, his crew's survival",
+            "Secret": "He knows more about the fate of the universe than he lets on and sends the crew into danger because he trusts them most",
+            "Under Pressure": "Naps. Or invents something catastrophic. Or both simultaneously."
+          }
+        }
+      }
+    ]
   }
 }
