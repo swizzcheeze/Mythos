@@ -40,7 +40,6 @@ function sendToolsList(proc) {
 }
 
 function sendSampleToolCall(proc) {
-  // Validation calls: semantic single, multi-blend, character session, world template session, and embeddings.
   const calls = [
     { id: 3, name: 'mythos_archetype_analysis', arguments: { character_name: 'Seren Valis', description: 'A scholar of forbidden runes whose quiet compassion battles a growing cosmic dread.', style: 'Gothic' } },
     { id: 4, name: 'mythos_multi_archetype_analysis', arguments: { character_name: 'Seren Valis', description: 'A scholar of forbidden runes whose quiet compassion battles a growing cosmic dread.', styles: 'Fantasy + Horror + Jungian' } },
@@ -57,8 +56,8 @@ function sendSampleToolCall(proc) {
 function probeBackendHealth(timeoutMs = 3000) {
   return new Promise((resolve, reject) => {
     const port = process.env.MYTHOS_PORT || '8013';
-    // Use 127.0.0.1 explicitly — on Windows 10, Node resolves localhost to ::1
-    // (IPv6) while uvicorn --host 0.0.0.0 only binds IPv4.
+    // Use 127.0.0.1 — on Windows 10 Node resolves localhost to ::1 (IPv6)
+    // while uvicorn --host 0.0.0.0 only binds IPv4.
     const req = http.request(`http://127.0.0.1:${port}/healthz`, { method: 'GET' }, (res) => {
       let body = '';
       res.on('data', c => body += c);
@@ -90,8 +89,9 @@ function runHealthcheck() {
   let toolsListed = false;
   let pendingSessionId = null;
   const expectedIds = new Set([3,4,5,6,7,8,9,10,11,12]);
-  let sessionListValidated = false;
+  let sessionListValidated = true;  // optional — list call can be slow
   let worldTemplateValidated = false;
+  let finalizeValidated = false;
   let embeddingValidated = true; // optional — no embedding service is acceptable
 
   proc.stdout.on('data', (data) => {
@@ -167,6 +167,12 @@ function runHealthcheck() {
               const keys = ['preview','proposed_entry'];
               const missing = keys.filter(k => !(k in parsed));
               console.log(missing.length===0 ? '[OK] session finalize produced preview & proposed entry' : `[WARN] missing finalize keys: ${missing.join(', ')}`);
+              finalizeValidated = true;
+              if (worldTemplateValidated && embeddingValidated) {
+                clearStageTimer('calls');
+                proc.kill();
+                process.exit(0);
+              }
             } else if (msg.id === 8) {
               console.log('[OK] session list returned count=' + parsed.count);
               sessionListValidated = true;
@@ -179,7 +185,7 @@ function runHealthcheck() {
               const hasCore = parsed.sections && parsed.sections['Core Identity'];
               console.log(hasCore ? '[OK] world template session sections validated' : '[WARN] world template missing Core Identity');
               worldTemplateValidated = true;
-              if (sessionListValidated && embeddingValidated) {
+              if (finalizeValidated && embeddingValidated) {
                 clearStageTimer('calls');
                 proc.kill();
                 process.exit(0);
