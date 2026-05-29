@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-// Configuration for the Mythos Backend running in Docker
-const BASE_URL = 'http://localhost:8001'; 
+// Configuration for the Mythos Backend
+const BASE_URL = `http://localhost:${process.env.MYTHOS_PORT || '8013'}`;
 const http = require('http');
 
 // Tool definitions, mirroring the FastAPI backend's Pydantic models
@@ -295,7 +295,7 @@ async function handleToolCall(toolName, args) {
 
     req.on('error', (e) => {
       // Critical error: The bridge cannot connect to the Docker container.
-      reject({ error: `[CRITICAL] Could not connect to Mythos Backend on port 8001. Is 'docker compose up' running?`, details: e.message });
+      reject({ error: `[CRITICAL] Could not connect to Mythos Backend. Is the backend running on port ${process.env.MYTHOS_PORT || '8013'}?`, details: e.message });
     });
 
     req.write(data);
