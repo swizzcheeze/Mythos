@@ -244,11 +244,10 @@ Mythos v2.0 is functional but still needs more real-world testing. Core CRUD, cr
 
 ## Acknowledgments
 
-This project was built in close collaboration with **OWL-Alpha** (OpenRouter) and **Hermes Agent** by [Nous Research](https://github.com/NousResearch/hermes-agent). The v2.0 architectural rewrite was a joint effort between human and AI across multiple sessions — fixing the core discrimination bug, adding per-world isolation, building the MCP bridge, and productionizing the entire stack.
+This project was built in close collaboration with **OWL-Alpha** (OpenRouter) and **Hermes Agent** by [Nous Research](https://github.com/NousResearch/hermes-agent). The v2.0 architectural rewrite — fixing the core discrimination bug, adding per-world isolation, building the MCP bridge, and productionizing the entire stack — was a joint effort across multiple sessions and model providers.
 
 Without Nous Research and the Hermes Agent ecosystem, this project would not exist as it does today.
 
-**Links:**
 - [Hermes Agent on GitHub](https://github.com/NousResearch/hermes-agent)
 - [Hermes Agent Documentation](https://hermes-agent.nousresearch.com/docs)
 - [Nous Research Discord](https://discord.gg/nousresearch)
