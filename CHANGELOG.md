@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- **New Feature: Multi-Provider LLM Support (6 Providers)** - Unified abstraction layer supporting 6 LLM providers with zero-rebuild switching. All provider SDKs pre-installed in Docker image.
+  - **Supported Providers**: Anthropic Claude, OpenRouter (200+ models), Groq (ultra-fast), xAI (Grok), Google Gemini, Ollama (local)
+  - **Zero-Rebuild Switching**: Change `MYTHOS_LLM_PROVIDER` environment variable and restart - no `docker compose build` needed!
+  - **Abstraction Functions**: `_get_llm_for_generation()`, `_get_llm_for_critique()`, `_invoke_llm()` work with all providers
+  - **Environment Variables**: 
+    - `MYTHOS_LLM_PROVIDER`: `ollama`, `anthropic`, `openrouter`, `groq`, `xai`, `gemini`
+    - API keys: `ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`, `GROQ_API_KEY`, `XAI_API_KEY`, `GEMINI_API_KEY`
+    - Model selection per provider: `MYTHOS_ANTHROPIC_MODEL`, `MYTHOS_OPENROUTER_MODEL`, etc.
+  - **Updated Endpoints**: `/ollama/health`, `/ollama/models`, `/ollama/generate` support all 6 providers
+  - **Pre-installed Packages**: `anthropic`, `openai` (for OpenRouter/xAI), `groq`, `google-generativeai`
+  - **Documentation**: Comprehensive `FRONTIER_MODELS.md` with all providers, `QUICKREF_FRONTIER.md`, `.env.example`
+  - **Testing**: `test_frontier_models.py` supports all providers
 - New Feature: `mythos_roleplay_start` endpoint and bridge tool to generate persona prompts from character sessions or provided fields. Healthcheck invokes it after session start.
 - Multi-world support (`mythos_create_world`, `mythos_select_world`, `mythos_list_worlds`, `mythos_wipe_lore_db`).
 - Interactive creation sessions (start / update / get / finalize / list) with persistent JSON storage per world.

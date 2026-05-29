@@ -1,424 +1,237 @@
-# 🌟 Mythos World Engine
+# 🌊 Mythos World Engine
 
 > **AI-Powered Creative Writing & Worldbuilding Toolkit**
-
-Transform your storytelling with composite archetype synthesis, persistent multi-world lore, interactive creation sessions, and creative constraints—accessible through LM Studio (MCP).
+>
+> *Rebuilt from the ground up — type-safe entities, per-world isolation, 22 archetype frameworks, semantic search, and a clean FastAPI backend.*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)](https://www.docker.com/)
 [![MCP](https://img.shields.io/badge/MCP-2024--10--07-green.svg)](https://modelcontextprotocol.io/)
-[![CI Healthcheck](https://github.com/swizzcheeze/Mythos/actions/workflows/ci.yml/badge.svg)](https://github.com/swizzcheeze/Mythos/actions/workflows/ci.yml)
+[![CI](https://github.com/swizzcheeze/Mythos/actions/workflows/ci.yml/badge.svg)](https://github.com/swizzcheeze/Mythos/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.11-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115-teal.svg)](https://fastapi.tiangolo.com/)
+
+---
+
+## ⚡ What Is This?
+
+Mythos is a **worldbuilding co-pilot** for creative writers, tabletop game masters, and worldbuilders. It persists your fictional worlds, characters factions, and lore in a searchable knowledge base — then lets you analyze, create, and roleplay through any MCP-compatible AI client (LM Studio, Hermes Agent, etc.).
+
+**v2.0 Rebuild**: The entire backend was rewritten to fix a critical entity type discrimination bug (characters saved as worlds, personas as lore, etc.), add per-world data isolation, and follow modern FastAPI patterns. The bridge layer now has 21 validated tool endpoints.
 
 ---
 
 ## ✨ Features
 
-### 🧬 Multi-Framework & Blended Character Analysis
-Analyze characters through **22 storytelling frameworks** or blend several (e.g. `Fantasy + Horror + Jungian`). Frameworks: Jungian, Disney, James Cameron, General, Fantasy, Gothic, Dark Gothic, Romance, Mystery, Adventure, Norse, Mythological, Greek, Horror, Sci-Fi, Quantum Physics, Medieval, C.S. Lewis, Stephen King, Alfred Hitchcock, Japanese, Korean.
+### 🧬 22-Archetype Character Analysis
+Analyze characters through **22 storytelling frameworks** — or blend them (`Fantasy + Horror + Jungian`) for composite depth.
 
-Now powered by lightweight semantic scoring (token + synonym overlap) for more meaningful archetype selection with confidence and tension metrics. Random fallback only used when semantic signal is weak (flagged via `low_signal_fallback`).
+| Jungian | Disney | James Cameron | Fantasy | Gothic | Dark Gothic |
+|---|---|---|---|---|---|
+| Romance | Mystery | Adventure | Norse | Mythological | Greek |
+| Horror | Sci-Fi | Quantum Physics | Medieval | C.S. Lewis | Stephen King |
+| Alfred Hitchcock | Japanese | Korean | General | | |
 
-Use `mythos_multi_archetype_analysis` for composite synthesis with per-framework confidence and a diversity tension metric.
+Each analysis returns **primary/secondary archetypes**, confidence scores, and a **tension metric** that measures internal character conflict potential.
 
-### 📖 Persistent Lore Database & Multi-World Workspaces
-Per-world JSON storage (default + custom worlds). Tools to create/select/list/wipe worlds. Each world has independent `lore_db.json`, `sessions.json`, and vector embeddings via FAISS.
-
-**NEW: Semantic Lore Search** – Search by thematic meaning using embeddings. Find entries like "ancient prophecies and doom" across your entire lore database with semantic similarity ranking.
-
-### 🔍 Embedding-Based Semantic Search
-Find lore entries by meaning, not just keywords. Uses local SentenceTransformers by default (`all-MiniLM-L6-v2`) with optional Cohere online embeddings. Embeddings are auto-indexed with FAISS for fast similarity search and persist across sessions.
+### 📖 Persistent Multi-World Lore
+- Per-world JSON storage — each world has its own `lore_db.json`, `sessions.json`, and FAISS vector index
+- Type-safe entity CRUD: characters, worlds, factions, locations, artifacts, creatures, events, cultures, conflicts, rituals, magic systems
+- Semantic search across all lore using embeddings (FAISS-backed)
+- Create, select, list, and delete isolated world workspaces
 
 ### 🛠 Interactive Creation Sessions
-Iterative, persistent templates (character, location, faction, magic_system, creature, artifact, event, culture, conflict, ritual, world). Start → update fields → preview (finalize) → optionally commit as lore.
+Guided templates for 11 entity types with structured sections and creative prompts:
 
-### 💡 Creative Constraint Generator
-Break writer’s block with thematic prompts (Sacrifice, Transformation, Time) styled to any genre.
-
-### 🔌 Seamless LM Studio Integration
-MCP protocol (2024-10-07), structured JSON-RPC, robust error handling, healthcheck script.
-
----
-
-## 🚀 Quick Demo (Composite Blend)
-
-```jsonc
-// Composite multi-framework analysis
-{
-  "character_name": "Aria Nyx",
-  "description": "A soulbound mage haunted by ancestral echoes, navigating collapsing timelines.",
-  "styles": "Fantasy + Horror + Jungian"
-}
+```
+Start → Fill Sections → Preview → Save as Entity
 ```
 
-Returns primary/secondary archetypes from each framework plus a synthesis summary.
+Each session is persistent and world-scoped. Characters, worlds, factions, magic systems, creatures, artifacts, events, cultures, conflicts, and rituals — all with genre-aware templates.
+
+### 🎭 Roleplay Mode
+Generate character persona prompts from your creation sessions. Any MCP-compatible client can use these to stay in-character during interactive storytelling.
+
+### 🔌 Multi-LLM Support
+Configured via environment variables — switch between providers without code changes:
+
+| Provider | Config |
+|----------|--------|
+| **Ollama** (default) | `MYTHOS_LLM_PROVIDER=ollama` |
+| **Anthropic** | `MYTHOS_LLM_PROVIDER=anthropic` |
+| **OpenRouter** | `MYTHOS_LLM_PROVIDER=openrouter` |
+| **Groq** | `MYTHOS_LLM_PROVIDER=groq` |
+| **xAI (Grok)** | `MYTHOS_LLM_PROVIDER=xai` |
+| **Google Gemini** | `MYTHOS_LLM_PROVIDER=gemini` |
 
 ---
 
-## 🛠️ Tool Highlights
+## 🚀 Quick Start
 
-| Tool | Purpose |
-|------|---------|
-| `mythos_archetype_analysis` | Single-framework character analysis |
-| `mythos_multi_archetype_analysis` | Composite blended archetype synthesis |
-| `mythos_creation_mode` | One-shot static template guide |
-| `mythos_creation_session_start/update/get/finalize/list` | Interactive persistent creation workflow |
-| `mythos_create_lore_entry` / `mythos_update_lore_entry` | Add & edit lore (auto-embedded) |
-| `mythos_list_lore_entries` | Search & tag filter lore entries |
-| `mythos_semantic_lore_search` | Find lore by semantic meaning with ranking |
-| `mythos_wipe_lore_db` | Irreversibly wipe active world lore |
-| `mythos_create_world` / `mythos_select_world` / `mythos_list_worlds` | Multi-world management |
-| `mythos_get_inspiration` | Thematic creative constraints |
-| `mythos_list_archetype_styles` | Enumerate frameworks |
-| `mythos_list_tools` | Human-readable catalog |
-| `mythos_roleplay_start` | Generate a persona prompt for in-character roleplay |
-
----
-
-## 📦 Installation (Summary)
-See [INSTALLATION.md](INSTALLATION.md) for full setup.
+### Using Docker (Recommended)
 
 ```powershell
-# Start backend (build + run detached)
-docker compose up --build -d
+# Clone and start
+git clone https://github.com/swizzcheeze/Mythos.git
+cd Mythos
+docker compose up -d
 
-# Run healthcheck (backend probe + MCP negotiation + sample tool calls)
+# Verify health
 node .\mcp-healthcheck.js
 ```
 
-Configure LM Studio MCP to point at `mythos-bridge.js` and set `MYTHOS_MCP_PROTOCOL=2024-10-07`.
+### Using Hermes Agent
 
-Path examples (adjust for your system):
-| OS | Example Command Args |
-|----|----------------------|
-| Windows | `"C:\\path\\to\\mythos\\mythos-bridge.js"` |
-| macOS | `/Users/you/path/mythos/mythos-bridge.js` |
-| Linux | `/home/you/mythos/mythos-bridge.js` |
-
-If using LM Studio config JSON, replace `<drive>` placeholder with your actual absolute path. Relative paths may fail if LM Studio launches from a different working directory.
-
----
-
-## 🩺 Healthcheck & Reliability
-`mcp-healthcheck.js` now performs phased validation with timeouts and early aborts:
-
-1. Backend `/healthz` probe (fails fast if container not running)
-2. MCP `initialize` (verifies protocol version `2024-10-07` & bridge identity)
-3. `tools/list` (ensures tool schema synchronization)
-4. Sample `tools/call` sequence:
-  - `mythos_archetype_analysis` (checks semantic fields: `confidence_primary`, `confidence_secondary`, `tension_score`)
-  - `mythos_multi_archetype_analysis` (verifies composite fields: `analyses`, `composite_tension_metric`)
-  - Creation session lifecycle: start → update → finalize → list
-  - Roleplay: generate persona instructions from the started character session
-
-Timeouts (defaults):
-```
-INIT_TIMEOUT_MS = 4000
-TOOLS_TIMEOUT_MS = 4000
-CALLS_TIMEOUT_MS = 8000
-```
-
-Early abort triggers:
-- 404 on any tool endpoint (schema mismatch or backend not updated)
-- Timeout expiry per phase
-
-Result codes:
-- Exit `0` = all phases passed
-- Non-zero = phase or endpoint failure (see console diagnostics)
-
-Use this script in CI or pre-commit hooks to guard against tool drift or backend startup regressions.
-
----
-
-## 🔍 Embedding & Semantic Search Configuration
-
-**Local Embeddings (Default)**
-- Model: `all-MiniLM-L6-v2` via SentenceTransformers
-- No API keys required, runs fully locally
-- Fast indexing with FAISS
-
-**Online Embeddings (Optional – Cohere)**
-Set `COHERE_API_KEY` environment variable:
 ```bash
-export COHERE_API_KEY="your-api-key-here"
-docker compose up --build -d
+# Start the backend locally (no Docker needed)
+cd mythos_backend
+pip install -r requirements.txt
+python main.py
+
+# In Hermes Agent, the mythos-bridge.js MCP server connects to localhost:8001
 ```
 
-The system automatically tries Cohere first if configured, falls back to local model on failure.
+### Local Development
 
-**Configuration**
-| Variable | Purpose | Default |
+```powershell
+cd D:\Mythos
+pip install -r mythos_backend\requirements.txt
+python -m mythos_backend.main
+# → http://localhost:8001/docs
+```
+
+---
+
+## 🏗 Architecture
+
+```
+┌─────────────────────────────────────────────────┐
+│  AI Client (LM Studio / Hermes Agent / etc.)    │
+└────────────────────┬────────────────────────────┘
+                     │ MCP (stdio JSON-RPC)
+                     ▼
+┌─────────────────────────────────────────────────┐
+│  mythos-bridge.js  (MCP Server)                 │
+│  21 tool endpoints → POST /call/{toolName}      │
+└────────────────────┬────────────────────────────┘
+                     │ HTTP localhost:8001
+                     ▼
+┌─────────────────────────────────────────────────┐
+│  Mythos Backend v2.0  (FastAPI)                 │
+│                                                 │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────┐    │
+│  │ /entities│ │/sessions │ │  /worlds     │    │
+│  │ CRUD     │ │ templates│ │  management  │    │
+│  └──────────┘ └──────────┘ └──────────────┘    │
+│  ┌──────────┐ ┌──────────┐ ┌──────────────┐    │
+│  │/archetypes│ │  /llm   │ │ /embeddings  │    │
+│  │ analysis  │ │generate │ │  + FAISS     │    │
+│  └──────────┘ └──────────┘ └──────────────┘    │
+│                                                 │
+│  Services: world_data · embedding · archetype   │
+│  Models: Pydantic v2 discriminated unions       │
+└─────────────────────────────────────────────────┘
+```
+
+### Key Design Decisions
+
+- **Discriminated union entities** — `entity_type` field enforces correct type at validation time. No more "persona saved as world."
+- **Per-world isolation** — All data scoped to `(world, entity)` pairs. Zero cross-world leakage.
+- **Atomic file I/O** — JSON writes use temp+rename with per-path file locks.
+- **No global mutable state** — All config via env vars, all services are stateless functions.
+- **Bridge dispatch** — `/call/{toolName}` maps 21 MCP tool names to typed backend handlers.
+
+---
+
+## 🔧 Configuration
+
+| Variable | Default | Purpose |
 |----------|---------|---------|
-| `MYTHOS_EMBEDDING_MODEL` | SentenceTransformers model name | `all-MiniLM-L6-v2` |
-| `COHERE_API_KEY` | Optional Cohere API key (enables online embeddings) | (disabled) |
-
-**Vector Storage**
-- Per-world metadata: `world_data/worlds/<name>/vectors_metadata.json`
-- FAISS indices: Loaded in-memory, rebuilt on service restart from lore entries
-- Auto-embedded on `create_lore_entry`, enabling immediate semantic search
-
----
-
-## 🎯 Use Cases
-- Writers: Layered archetype tension maps for protagonists
-- Game Designers: World-per-project isolated lore + sessions + semantic search
-- Screenwriters: Cross-genre archetype blending (e.g. Sci-Fi Horror)
-- RPG Masters: Rapid ritual, faction, creature templates with thematic discovery
-- Worldbuilders: Parallel universes with independent persistent data + semantic lore discovery
+| `MYTHOS_LLM_PROVIDER` | `ollama` | LLM provider |
+| `MYTHOS_OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama endpoint |
+| `MYTHOS_OLLAMA_MODEL` | `llama3` | Default model |
+| `EMBEDDING_SERVICE_URL` | `http://localhost:8002` | Embedding service |
+| `COHERE_API_KEY` | None | Cohere embedding fallback |
+| `MYTHOS_ADMIN_TOKEN` | None | Admin auth (None = open) |
 
 ---
 
-## 🏗️ Architecture
+## 🛠 API Endpoints
 
+### Entity CRUD
 ```
-LM Studio → MCP stdio → mythos-bridge.js → HTTP → FastAPI → world_data JSON
+POST   /entities              → Create (type-safe via entity_type)
+GET    /entities              → List/search (filter by type, tags, search)
+GET    /entities/{id}         → Get one
+PATCH  /entities/{id}         → Partial update
+DELETE /entities/{id}         → Delete
 ```
 
-**Components**
-- `mythos-bridge.js` – MCP JSON-RPC bridge
-- `mythos_backend.py` – FastAPI service (analysis, sessions, worlds, lore)
-- `world_data/lore_db.json` – Default world lore
-- `world_data/sessions.json` – Default world creation sessions
-- `world_data/worlds/<name>/lore_db.json` – Per-world lore
-- `world_data/worlds/<name>/sessions.json` – Per-world creation sessions
-- `mcp-healthcheck.js` – Protocol & tool validation
-
+### Creation Sessions
 ```
-mythos/
-├── mythos-bridge.js
-├── mcp-healthcheck.js
-├── docker-compose.yml
-├── mythos_backend/
-│   ├── Dockerfile
-│   ├── mythos_backend.py
-│   └── requirements.txt
-└── world_data/
-    ├── lore_db.json
-    ├── sessions.json
-    └── worlds/
-        └── <world>/
-            ├── lore_db.json
-            └── sessions.json
+GET    /sessions/templates    → List template types
+POST   /sessions              → Start session
+GET    /sessions/{id}         → Get state + progress
+POST   /sessions/{id}/update  → Fill section fields
+POST   /sessions/{id}/finalize → Preview + optional save
+DELETE /sessions/{id}         → Delete session
 ```
 
----
-
-## 📖 Documentation
-- [Installation Guide](INSTALLATION.md)
-- Chat Agent (Dev-Only): Files under `.github/agents/` are for GitHub Code Agent/Chat assistance only. They are excluded from release archives and ignored from version control to avoid shipping non-runtime assets.
-- Roleplay quick test (HTTP):
-  ```powershell
-  Invoke-WebRequest -Uri http://localhost:8001/call/mythos_roleplay_start -Method POST -ContentType 'application/json' -Body '{"character_name":"Seren Valis","bio":"Quiet scholar of forbidden runes.","style":"Fantasy"}'
-  ```
-- FastAPI docs: `http://localhost:8001/docs` (running)
-- Agent / development patterns: `.github/copilot-instructions.md`
-
----
-
-## 🎭 Roleplay Usage
-
-- Purpose: Generate a persona prompt and instructions to roleplay as your character.
-
-- HTTP (backend directly):
-  ```powershell
-  # From a character session
-  $body = @{ session_id = 'YOUR_SESSION_ID' } | ConvertTo-Json
-  Invoke-RestMethod -Uri "http://localhost:8001/call/mythos_roleplay_start" -Method Post -Body $body -ContentType "application/json"
-
-  # Without a session (name + bio)
-  $body = @{ character_name = 'Seren Valis'; bio = 'Quiet scholar of forbidden runes.'; style = 'Fantasy' } | ConvertTo-Json
-  Invoke-RestMethod -Uri "http://localhost:8001/call/mythos_roleplay_start" -Method Post -Body $body -ContentType "application/json"
-  ```
-
-- MCP Bridge (LM Studio):
-  - Call the tool `mythos_roleplay_start` with either:
-    - `session_id` from a `character` creation session, or
-    - `character_name` + optional `bio` and `style`.
-  - The bridge shows a friendly formatted view by default; set `MYTHOS_SHOW_JSON=1` to receive raw JSON.
-
-- Output structure:
-  - `persona`: `{ name, style, traits[], background[] }`
-  - `instructions`: prompt text suitable as a system/assistant instruction
-
-Tips
-- Keep responses concise by default; ask for longer outputs when needed.
-- Adjust `style` (e.g., Noir, Sci-Fi) for tone changes.
-
----
-
-## 🧪 CI Notes
-
-- Pipeline Focus: Run `mcp-healthcheck.js` after starting the backend to validate MCP negotiation and core tool calls.
-- Backend Start: Prefer `uvicorn mythos_backend:app --host 127.0.0.1 --port 8001` with a short `/healthz` readiness loop before healthcheck.
-- Env Toggles (Bridge):
-  - `MYTHOS_MCP_PROTOCOL=2024-10-07` (LM Studio rejects newer versions)
-  - `MYTHOS_SHOW_JSON=1` (force raw JSON for reliable parsing)
-  - `MYTHOS_COLOR=0` (disable ANSI for clean logs)
-- Early Abort: Treat the first HTTP 404 from any `tools/call` as a schema drift or missing endpoint.
-- Common Failures:
-  - Backend not reachable → ensure docker service up and port 8001 mapped.
-  - Tool validation 422 → align bridge input schemas with backend Pydantic required fields.
-  - Protocol mismatch → enforce `2024-10-07`.
-- Artifacts: Optionally archive healthcheck console output and backend logs to aid debugging.
-
-### Example GitHub Actions `ci.yml`
-```yaml
-name: CI Healthcheck
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  healthcheck:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install backend deps
-        working-directory: mythos_backend
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Start backend (uvicorn)
-        run: |
-          nohup python -m uvicorn mythos_backend:app --host 127.0.0.1 --port 8001 &
-          for i in {1..40}; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8001/healthz || true);
-            if [ "$code" = "200" ]; then echo "backend ready"; break; fi; sleep 0.2;
-          done
-
-      - name: Run MCP healthcheck
-        env:
-          MYTHOS_MCP_PROTOCOL: '2024-10-07'
-          MYTHOS_SHOW_JSON: '1'
-          MYTHOS_COLOR: '0'
-        run: node ./mcp-healthcheck.js
-
-      - name: Archive logs (optional)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: healthcheck-logs
-          path: |
-            **/*.log
-            world_data/**/*.json
+### World Management
+```
+GET    /worlds                → List all worlds + entity counts
+POST   /worlds                → Create world
+DELETE /worlds/{name}         → Delete world
+GET    /worlds/{name}/stats   → World statistics
 ```
 
----
-
-## 🔄 Workflow Examples
-**Interactive Creation Session**
-1. `mythos_creation_session_start` (template_type="character")
-2. `mythos_creation_session_update` (fill sections incrementally)
-3. `mythos_creation_session_finalize` (preview without saving)
-4. `mythos_create_lore_entry` (commit when ready)
-
-**Multi-World Switch**
-**Semantic Archetype Analysis**
-```jsonc
-{
-  "character_name": "Seren Valis",
-  "description": "A scholar of forbidden runes whose quiet compassion battles a growing cosmic dread.",
-  "style": "Gothic"
-}
+### LLM
 ```
-Response now includes:
-- `confidence_primary` / `confidence_secondary`: normalized semantic scores
-- `tension_score`: difference indicating internal friction potential
-- `low_signal_fallback`: true if random heuristic used (weak semantic match)
+POST   /llm/generate          → Text generation
+POST   /llm/critique          → Critique/analysis
+GET    /llm/providers         → Available providers
+```
 
-1. `mythos_create_world` (name="Eldoria")
-2. `mythos_select_world` (name="Eldoria")
-3. Build lore & sessions independently
+### Full docs at `/docs` (Swagger UI) when running.
 
 ---
 
-## 🧪 Semantic Metrics Explained
-- `confidence_primary` / `confidence_secondary`: Overlap-based normalized scores; higher = stronger textual alignment.
-- `tension_score`: Absolute difference between confidences; higher = more internal conflict potential.
-- `low_signal_fallback`: True when description provides insufficient semantic signal (heuristic threshold).
-- `composite_tension_metric`: Variance of primary scores across blended frameworks—measures diversity of driving forces.
+## 🧪 Testing
 
----
-
-## 🌐 GitHub Repository
-Source hosted at: https://github.com/swizzcheeze/Mythos
-
-Suggested initial commit & push (if not already versioned):
 ```powershell
-git init
-git add .
-git commit -m "feat: initial public release with semantic scoring & robust healthcheck"
-git branch -M main
-git remote add origin https://github.com/swizzcheeze/Mythos.git
-git push -u origin main
-```
+# Full healthcheck (validates all 21 MCP tools)
+node .\mcp-healthcheck.js
 
-For ongoing changes use conventional commits (e.g., `feat:`, `fix:`, `docs:`).
-
----
-
-## 🔒 Private Repository Notice
-If this repository is now set to Private:
-- Access is restricted to approved collaborators; submit access requests via issue or direct contact.
-- Generated lore and session JSON files may include internally sensitive creative IP—do not redistribute externally.
-- Forking: Create private forks only; public forks are disabled once visibility changes.
-- CI & Tokens: Ensure any GitHub Actions secrets have least-privilege (`repo` scope PAT if required) and rotate on collaborator changes.
-- External Sharing: Share excerpts (e.g., archetype metrics) only after manual review to avoid leaking full world data context.
-- Licensing: MIT still applies internally; outbound publication of code requires maintainer approval to prevent inadvertent exposure of narrative assets.
-- Backups: Use encrypted storage for world_data exports when archiving.
-
-To revert to public visibility (if needed): use GitHub Settings → Change visibility or:
-```powershell
-gh repo edit swizzcheeze/Mythos --visibility public --accept-visibility-change-consequences
+# Python tests
+python -m pytest tests/
 ```
 
 ---
 
----
+## 📁 What's in Each File
 
-## 🤝 Contributing
-See [CONTRIBUTING.md](CONTRIBUTING.md) for workflow & standards.
-
-Ideas & PRs welcome:
-- Enhanced semantic NLP (embeddings, clustering)
-- Vector lore search & retrieval Augmented Generation
-- Export pipelines (Markdown world bible, PDF anthology)
-- Additional cultural / genre frameworks
-- Session advisory / auto-fill heuristics
-
----
-
-## 📜 License
-MIT – see [LICENSE](LICENSE)
+| File | Purpose |
+|------|---------|
+| `mythos_backend/main.py` | FastAPI app, lifespan, router mounting |
+| `mythos_backend/models/entities.py` | Pydantic v2 discriminated union models |
+| `mythos_backend/services/world_data.py` | Per-world CRUD, atomic file I/O |
+| `mythos_backend/services/embedding.py` | Embedding with retry + FAISS |
+| `mythos_backend/services/archetype.py` | 22-framework semantic analysis |
+| `mythos_backend/services/templates.py` | Interactive creation sessions |
+| `mythos_backend/routes/bridge.py` | MCP dispatch (21 tool handlers) |
+| `mythos_backend/routes/entities.py` | Entity CRUD endpoints |
+| `mythos_backend/routes/sessions.py` | Session endpoints |
+| `mythos-bridge.js` | MCP server (stdio JSON-RPC) |
+| `mythos_backend/Dockerfile` | CUDA-enabled container |
 
 ---
 
 ## 🙏 Acknowledgments
-Powered by FastAPI, Model Context Protocol, and narrative design traditions.
+
+This project evolved over time — from basic local models doing the heavy lifting, to browser-based workflows with Gemini and Claude, to **OWL (OpenRouter) paired with Hermes Agent** doing the intensive architectural rewrite. The v2.0 rebuild that fixed the core discrimination bug and made the system production-ready was a collaborative effort between human and AI across multiple sessions and model providers.
 
 ---
 
-## 📞 Support
-- Health: `node .\mcp-healthcheck.js`
-- Backend logs: `docker compose logs -f mythos-backend`
-- Protocol mismatch: ensure `MYTHOS_MCP_PROTOCOL=2024-10-07`
-- Stalled analysis: check semantic threshold / description richness
+## License
 
----
-
-**Happy Worldbuilding!** 🌍✨
-
+MIT — see [LICENSE](LICENSE)

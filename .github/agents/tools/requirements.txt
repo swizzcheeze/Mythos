@@ -1,0 +1,14 @@
+# Code Review Agent Tool Dependencies
+# Install with: pip install -r .github/agents/tools/requirements.txt
+
+# Code complexity analysis
+radon~=6.0.1
+
+# Security vulnerability detection
+bandit~=1.7.10
+
+# Data validation and serialization
+pydantic~=2.10.5
+
+# Testing (optional)
+pytest~=8.0.0

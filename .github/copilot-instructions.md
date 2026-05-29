@@ -8,6 +8,40 @@ This is a **two-component MCP (Model Context Protocol) bridge system**:
 
 **Data flow**: LM Studio → MCP stdio → mythos-bridge.js → HTTP → FastAPI backend → persistent JSON storage
 
+## LLM Provider Architecture (Frontier Models Support)
+
+**Unified Abstraction Layer**: The backend supports both local Ollama models and Anthropic Claude API through a provider abstraction:
+
+```python
+# Provider-agnostic LLM creation
+llm = _get_llm_for_generation(model=None, temperature=0.7)  # Uses configured provider
+response = _invoke_llm(llm, prompt)  # Works with both Ollama and Anthropic
+```
+
+**Environment Configuration**:
+- `MYTHOS_LLM_PROVIDER`: `"ollama"` (default), `"anthropic"`, `"openrouter"`, `"groq"`, `"xai"`, or `"gemini"`
+- `ANTHROPIC_API_KEY`: Anthropic Claude API key
+- `OPENROUTER_API_KEY`: OpenRouter API key (access 200+ models)
+- `GROQ_API_KEY`: Groq API key (fast inference)
+- `XAI_API_KEY`: xAI (Grok) API key
+- `GEMINI_API_KEY`: Google Gemini API key
+- Model configuration: `MYTHOS_ANTHROPIC_MODEL`, `MYTHOS_OPENROUTER_MODEL`, `MYTHOS_GROQ_MODEL`, `MYTHOS_XAI_MODEL`, `MYTHOS_GEMINI_MODEL`, `MYTHOS_OLLAMA_MODEL`
+- `MYTHOS_OLLAMA_BASE_URL`: Ollama server URL (default: `http://host.docker.internal:11434`)
+
+**Key Functions**:
+- `_get_llm_for_generation(model, temperature)`: Returns LLM for creative generation
+- `_get_llm_for_critique(model, temperature)`: Returns LLM for critique/analysis
+- `_invoke_llm(llm, prompt)`: Unified invocation for both providers
+
+**Implementation Pattern**:
+- API providers (Anthropic, OpenRouter, Groq, xAI, Gemini) return a dict with `{"provider": "...", "model": ..., "client": ...}` or `{"provider": "gemini", "model": ..., "temperature": ...}`
+- Ollama returns LangChain `ChatOllama` instance
+- `_invoke_llm()` handles provider-specific invocation logic for all 6 providers
+- Both `mythos_backend.py` and `mythos_graph.py` use the same abstraction
+- All provider packages pre-installed in container - users switch via environment variables without rebuilding
+
+**Automatic Fallback**: If Anthropic is selected but API key is missing, system falls back to Ollama with warning message.
+
 ## Critical Patterns
 
 ### MCP Protocol Negotiation
@@ -158,6 +192,21 @@ node .\mcp-healthcheck.js
 |----------|-----------|---------|---------|
 | `MYTHOS_MCP_PROTOCOL` | Bridge | Override MCP protocol version | `2024-10-07` |
 | `LORE_DB_PATH` | Backend | Path to lore JSON file | `/app/world_data/lore_db.json` |
+| `MYTHOS_LLM_PROVIDER` | Backend | LLM provider: `"ollama"`, `"anthropic"`, `"openrouter"`, `"groq"`, `"xai"`, `"gemini"` | `ollama` |
+| `ANTHROPIC_API_KEY` | Backend | Anthropic API key | None |
+| `OPENROUTER_API_KEY` | Backend | OpenRouter API key | None |
+| `GROQ_API_KEY` | Backend | Groq API key | None |
+| `XAI_API_KEY` | Backend | xAI (Grok) API key | None |
+| `GEMINI_API_KEY` | Backend | Google Gemini API key | None |
+| `MYTHOS_ANTHROPIC_MODEL` | Backend | Anthropic model | `claude-3-5-sonnet-20241022` |
+| `MYTHOS_OPENROUTER_MODEL` | Backend | OpenRouter model | `anthropic/claude-3.5-sonnet` |
+| `MYTHOS_GROQ_MODEL` | Backend | Groq model | `llama-3.3-70b-versatile` |
+| `MYTHOS_XAI_MODEL` | Backend | xAI model | `grok-beta` |
+| `MYTHOS_GEMINI_MODEL` | Backend | Gemini model | `gemini-1.5-pro` |
+| `MYTHOS_OLLAMA_BASE_URL` | Backend | Ollama server URL | `http://host.docker.internal:11434` |
+| `MYTHOS_OLLAMA_MODEL` | Backend | Ollama model | `llama3` |
+| `MYTHOS_GENERATOR_MODEL` | Backend | Override model for generation | Provider default |
+| `MYTHOS_CRITIC_MODEL` | Backend | Override model for critique | Provider default |
 
 ## Common Pitfalls
 

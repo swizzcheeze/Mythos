@@ -1,0 +1,40 @@
+{
+  "mcpServers": {
+    "MCP_DOCKER": {
+      "command": "docker",
+      "args": [
+        "mcp",
+        "gateway",
+        "run"
+      ],
+      "env": {
+        "LOCALAPPDATA": "C:\\Users\\swizz\\AppData\\Local",
+        "ProgramData": "C:\\ProgramData",
+        "ProgramFiles": "C:\\Program Files"
+      }
+    },
+    "desktop-commander": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-v",
+        "C:/:/c",
+        "-v",
+        "D:/:/d",
+        "-v",
+        "E:/:/e",
+        "mcp/desktop-commander"
+      ]
+    },
+    "mythos": {
+      "command": "node",
+      "args": ["mythos-bridge.js"],
+      "cwd": "d:\\Mythos",
+      "env": {
+        "MYTHOS_MCP_PROTOCOL": "2024-10-07"
+      }
+    }
+  }
+}

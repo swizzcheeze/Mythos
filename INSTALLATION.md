@@ -24,6 +24,68 @@ Invoke-WebRequest -Uri "http://localhost:8001/healthz" | Select-Object StatusCod
 start http://localhost:8001/docs
 ```
 
+Optional: verify LLM provider connectivity and models:
+
+```powershell
+Invoke-WebRequest -Uri "http://localhost:8001/ollama/health"
+Invoke-WebRequest -Uri "http://localhost:8001/ollama/models"
+```
+
+## Frontier Models Configuration (Optional)
+
+Mythos supports both **local Ollama models** (default) and **Anthropic Claude API** (Frontier models).
+
+### Option 1: Anthropic Claude (Recommended for Best Quality)
+
+1. **Get an API key** from https://console.anthropic.com/
+
+2. **Set environment variables**:
+   ```powershell
+   $env:MYTHOS_LLM_PROVIDER="anthropic"
+   $env:ANTHROPIC_API_KEY="sk-ant-api03-your-key-here"
+   ```
+
+3. **Start the service**:
+   ```powershell
+   docker compose up --build -d
+   ```
+
+4. **Verify provider**:
+   ```powershell
+   Invoke-WebRequest -Uri "http://localhost:8001/ollama/health" | ConvertFrom-Json
+   # Should show: provider="anthropic", connected=true
+   ```
+
+### Option 2: Local Ollama (Default - Free & Private)
+
+No configuration needed! Just ensure Ollama is running locally:
+
+```powershell
+# Check if Ollama is accessible
+Invoke-WebRequest -Uri "http://localhost:11434/api/tags"
+```
+
+### Using .env File (Recommended)
+
+Create a `.env` file in the project root:
+
+```env
+# Use Anthropic Claude
+MYTHOS_LLM_PROVIDER=anthropic
+ANTHROPIC_API_KEY=sk-ant-api03-your-key-here
+MYTHOS_ANTHROPIC_MODEL=claude-3-5-sonnet-20241022
+
+# OR use local Ollama (default)
+# MYTHOS_LLM_PROVIDER=ollama
+# MYTHOS_OLLAMA_MODEL=llama3
+```
+
+Docker Compose automatically reads `.env` files.
+
+**For complete Frontier models documentation**, see:
+- [FRONTIER_MODELS.md](FRONTIER_MODELS.md) - Full configuration guide
+- [QUICKREF_FRONTIER.md](QUICKREF_FRONTIER.md) - Quick reference card
+
 ### 3. Test MCP Bridge (Phased Healthcheck)
 
 ```powershell
@@ -40,6 +102,7 @@ Phases & expectations:
   - Multi-framework composite (diversity metric)
   - Creation session lifecycle (start/update/finalize/list)
   - Roleplay persona prompt from started character session
+  - Quick Ollama health probe to confirm the backend can reach your local daemon
 ### CI Tips
 
 - Start backend via uvicorn and wait for `/healthz` before healthcheck.

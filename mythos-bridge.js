@@ -117,6 +117,18 @@ const tools = [
     }
   },
   {
+    name: 'mythos_delete_world',
+    description: 'IRREVERSIBLE: Delete an entire world directory (not allowed for default). Requires confirm=\'CONFIRM\'.',
+    inputSchema: {
+      type: 'object',
+      required: ['name', 'confirm'],
+      properties: {
+        name: { type: 'string', description: 'World name to delete (folder-safe).' },
+        confirm: { type: 'string', description: "Must be 'CONFIRM' to proceed." }
+      }
+    }
+  },
+  {
     name: 'mythos_list_worlds',
     description: 'List available worlds and show the active one.',
     inputSchema: { type: 'object', properties: {} }
@@ -157,17 +169,21 @@ const tools = [
       }
     }
   },
-  {
+   {
     name: 'mythos_creation_session_update',
-    description: 'Update fields for an active creation session; supports partial nested updates. Structure: { "Section Name": { "Field Name": value } }. Example: { "Core Identity": { "World Name": "Eldoria", "Central Theme": "Light vs Shadow" }, "Geography": { "Major Regions": ["Wastes", "Coast"] } }. WRONG: { "History & Myth": ["value"] }. RIGHT: { "History & Myth": { "Founding Event": "value" } }.',
+    description: 'Update fields for an active creation session. IMPORTANT: Always nest updates as { "Section": { "Field": value } }. Do NOT pass { "Section": "value" }—every section must contain an object with field names as keys. Example: { "Basic Info": { "Age": "23", "Occupation": "Enchantress" }, "Abilities": { "Skills": ["magic", "seduction"] } }.',
     inputSchema: {
       type: 'object',
       required: ['session_id', 'updates'],
       properties: {
         session_id: { type: 'string', description: 'Session identifier from start.' },
         updates: { 
-          type: 'object', 
-          description: 'Two-level nested structure: { "Section": { "Field": value } }. Each section maps to an object. Field values can be strings or arrays.'
+          type: 'object',
+          additionalProperties: {
+            type: 'object',
+            additionalProperties: true
+          },
+          description: 'MANDATORY nested structure: { "Section Name": { "Field Name": value } }. Every section value MUST be an object with field-name keys. Field values can be strings, arrays, or objects.'
         }
       }
     }
@@ -258,7 +274,8 @@ async function handleToolCall(toolName, args) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(data)
+        'Content-Length': Buffer.byteLength(data),
+        ...(process.env.MYTHOS_ADMIN_TOKEN ? { 'X-Admin-Token': process.env.MYTHOS_ADMIN_TOKEN } : {})
       }
     }, (res) => {
       let responseBody = '';

@@ -15,12 +15,53 @@ services:
     working_dir: /app
     environment:
       - LORE_DB_PATH=/app/world_data/lore_db.json
+      - EMBEDDING_SERVICE_URL=http://host.docker.internal:8002
+      - MYTHOS_MUTE_HEALTHZ_LOGS=1
+      - MYTHOS_OLLAMA_BASE_URL=http://host.docker.internal:11434
+      # LLM Provider Configuration (choose: ollama, anthropic, openrouter, groq, xai, gemini)
+      - MYTHOS_LLM_PROVIDER=${MYTHOS_LLM_PROVIDER:-ollama}
+      
+      # Anthropic API Configuration
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - MYTHOS_ANTHROPIC_MODEL=${MYTHOS_ANTHROPIC_MODEL:-claude-3-5-sonnet-20241022}
+      
+      # OpenRouter API Configuration
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - MYTHOS_OPENROUTER_MODEL=${MYTHOS_OPENROUTER_MODEL:-anthropic/claude-3.5-sonnet}
+      
+      # Groq API Configuration
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - MYTHOS_GROQ_MODEL=${MYTHOS_GROQ_MODEL:-llama-3.3-70b-versatile}
+      
+      # xAI (Grok) API Configuration
+      - XAI_API_KEY=${XAI_API_KEY:-}
+      - MYTHOS_XAI_MODEL=${MYTHOS_XAI_MODEL:-grok-beta}
+      
+      # Google Gemini API Configuration
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - MYTHOS_GEMINI_MODEL=${MYTHOS_GEMINI_MODEL:-gemini-1.5-pro}
+      
+      # Ollama Configuration (local models)
+      - MYTHOS_OLLAMA_MODEL=${MYTHOS_OLLAMA_MODEL:-llama3}
+      
+      # Advanced: Override models for specific tasks
+      - MYTHOS_GENERATOR_MODEL=${MYTHOS_GENERATOR_MODEL:-}
+      - MYTHOS_CRITIC_MODEL=${MYTHOS_CRITIC_MODEL:-}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     healthcheck:
       test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0) if urllib.request.urlopen('http://127.0.0.1:8001/healthz', timeout=2).status==200 else sys.exit(1)\""]
-      interval: 10s
+      interval: 30s
       timeout: 3s
       retries: 5
-      start_period: 5s
+      start_period: 20s
 
 # No volumes section needed since there are no named volumes (like db_data)
 # All volumes are host-path mounts for persistence.

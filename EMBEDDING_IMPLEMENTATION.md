@@ -179,3 +179,23 @@ curl -X POST http://localhost:8001/call/mythos_semantic_lore_search \
     "world": "default"
   }'
 ```
+
+## Running the External Embedding Service (recommended for Docker)
+
+When running the backend inside Docker/`uvicorn`, PyTorch + multiprocessing can deadlock. The repository includes `embedding_service.py` — a small FastAPI service that loads the SentenceTransformers model and exposes a simple HTTP API. Run it on the host and point the backend at it via `EMBEDDING_SERVICE_URL`.
+
+Quick start (host machine):
+
+```powershell
+# optional: create a venv and activate it
+python -m venv .venv-embed; .\.venv-embed\Scripts\Activate.ps1
+pip install -r requirements.txt sentence-transformers==3.0.*
+python embedding_service.py
+```
+
+By default the service listens on port `8002`. In `docker-compose.yml` the backend is configured with:
+
+- `EMBEDDING_SERVICE_URL=http://host.docker.internal:8002`
+- `extra_hosts: ["host.docker.internal:host-gateway"]`
+
+If you prefer to run the embedding service inside a container, expose the port and update `EMBEDDING_SERVICE_URL` accordingly. Running the embedding model as an external service avoids the uvicorn/PyTorch deadlock and is the recommended deployment for Docker.

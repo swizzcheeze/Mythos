@@ -1,9 +1,23 @@
-fastapi==0.115.*
-uvicorn[standard]==0.30.*
-pydantic==2.9.*
-sentence-transformers==3.0.*
-faiss-cpu==1.8.*
+# Core
+fastapi>=0.115,<1.0
+uvicorn[standard]>=0.30,<1.0
+pydantic>=2.10,<3.0
+requests>=2.32,<3.0
+numpy>=1.26,<2.0
 
-# Optional: for online embedding model support (Cohere)
-# Install with: pip install -e .[cohere]
-# cohere==5.11.*
+# FAISS (GPU default, CPU fallback)
+faiss-gpu>=1.7,<2.0
+# CPU-only: faiss-cpu>=1.8,<2.0
+
+# LangChain (Ollama LLM support)
+langgraph>=0.2,<1.0
+langchain-ollama>=0.1,<1.0
+
+# LLM provider clients (all optional — only needed if configured)
+anthropic>=0.39,<1.0        # Anthropic Claude
+openai>=1.54,<2.0           # OpenRouter, xAI (Grok) — OpenAI-compatible
+groq>=0.11,<1.0             # Groq
+google-generativeai>=0.8,<1.0  # Google Gemini
+
+# Optional: Cohere for embeddings
+# cohere>=5.11,<6.0
