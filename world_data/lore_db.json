@@ -48,5 +48,47 @@
     "created_at": "2026-05-29T03:58:38.241960+00:00",
     "updated_at": "2026-05-29T03:58:38.241960+00:00",
     "category": ""
+  },
+  {
+    "id": "485d444f-48d2-4336-94f4-a9ddcc377183",
+    "entity_type": "lore",
+    "name": "Ancient Prophecy",
+    "content": "A mysterious prophecy spoken by the oracles of old, foretelling a great darkness and a champion of light.",
+    "tags": [
+      "prophecy",
+      "magic"
+    ],
+    "world": "default",
+    "created_at": "2026-05-29T06:11:37.105091+00:00",
+    "updated_at": "2026-05-29T06:11:37.105091+00:00",
+    "category": ""
+  },
+  {
+    "id": "367fec57-271f-47bf-875a-7061d138dfde",
+    "entity_type": "lore",
+    "name": "Ancient Prophecy",
+    "content": "A mysterious prophecy spoken by the oracles of old, foretelling a great darkness and a champion of light.",
+    "tags": [
+      "prophecy",
+      "magic"
+    ],
+    "world": "default",
+    "created_at": "2026-05-29T06:16:10.314628+00:00",
+    "updated_at": "2026-05-29T06:16:10.314628+00:00",
+    "category": ""
+  },
+  {
+    "id": "5fe5dede-3560-4f67-b7e5-98fcf7317b81",
+    "entity_type": "lore",
+    "name": "Ancient Prophecy",
+    "content": "A mysterious prophecy spoken by the oracles of old, foretelling a great darkness and a champion of light.",
+    "tags": [
+      "prophecy",
+      "magic"
+    ],
+    "world": "default",
+    "created_at": "2026-05-29T06:21:08.856580+00:00",
+    "updated_at": "2026-05-29T06:21:08.856580+00:00",
+    "category": ""
   }
 ]

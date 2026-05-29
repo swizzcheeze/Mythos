@@ -495,7 +495,9 @@ function formatSessionToolOutput(toolName, result, args) {
 }
 
 // === MCP Stdio Protocol Implementation ===
-const MCP_PROTOCOL_VERSION = process.env.MYTHOS_MCP_PROTOCOL || '2024-10-07';
+// Default to 2025-03-26 — Hermes supports: 2024-11-05, 2025-03-26, 2025-06-18, 2025-11-25
+// The old default 2024-10-07 is NOT supported by Hermes MCP client
+const MCP_PROTOCOL_VERSION = process.env.MYTHOS_MCP_PROTOCOL || '2025-03-26';
 process.stdin.setEncoding('utf8');
 
 let buffer = '';
