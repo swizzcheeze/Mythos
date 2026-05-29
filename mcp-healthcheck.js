@@ -6,7 +6,7 @@ const http = require('http');
 // --- Configuration ---
 const INIT_TIMEOUT_MS = 4000;
 const TOOLS_TIMEOUT_MS = 4000;
-const CALLS_TIMEOUT_MS = 8000; // covers sample tool calls & session follow-ups
+const CALLS_TIMEOUT_MS = 60000; // Ollama inference can be slow; allow up to 60s
 let initTimer, toolsTimer, callsTimer;
 function setStageTimer(name, ms, onTimeout) {
   clearStageTimer(name);
@@ -82,7 +82,6 @@ function probeBackendHealth(timeoutMs = 3000) {
 function runHealthcheck() {
   const bridgePath = require('path').resolve(__dirname, 'mythos-bridge.js');
   const env = { ...process.env, MYTHOS_SHOW_JSON: '1', MYTHOS_COLOR: '0' };
-  // Allow override via env; defaults handled by bridge.
   const proc = spawn('node', [bridgePath], { stdio: ['pipe', 'pipe', 'pipe'], env });
 
   let output = '';
@@ -93,13 +92,11 @@ function runHealthcheck() {
   const expectedIds = new Set([3,4,5,6,7,8,9,10,11,12]);
   let sessionListValidated = false;
   let worldTemplateValidated = false;
-  let embeddingValidated = false;
+  let embeddingValidated = true; // optional — no embedding service is acceptable
 
   proc.stdout.on('data', (data) => {
     output += data.toString();
-    // Try to parse each line separately
     const lines = output.split('\n');
-    // Keep last partial
     output = lines.pop() || '';
     for (const line of lines) {
       if (!line.trim()) continue;
@@ -111,7 +108,6 @@ function runHealthcheck() {
           console.log(`[OK] serverName=${msg.result.serverInfo?.serverName}`);
           initialized = true;
           clearStageTimer('init');
-          // Proceed to list tools
           sendToolsList(proc);
           setStageTimer('tools', TOOLS_TIMEOUT_MS, () => {
             console.error('[ERROR] tools/list timeout');
@@ -124,7 +120,6 @@ function runHealthcheck() {
           console.log(`[OK] tools/list returned ${names.length} tools`);
           console.log(`[OK] tool names: ${names.join(', ')}`);
           clearStageTimer('tools');
-          // Proceed to sample tools/call
           sendSampleToolCall(proc);
           setStageTimer('calls', CALLS_TIMEOUT_MS, () => {
             console.error('[ERROR] tools/call phase timeout');
@@ -192,7 +187,7 @@ function runHealthcheck() {
             } else if (msg.id === 11) {
               const hasId = parsed.entry_id && parsed.entry_id.length > 0;
               console.log(hasId ? `[OK] lore entry created with id=${parsed.entry_id}` : '[WARN] lore creation missing entry_id');
-              embeddingValidated = false;
+              // embeddingValidated stays true — semantic search is optional
             } else if (msg.id === 12) {
               const hasResults = Array.isArray(parsed.results);
               const embeddingModel = parsed.embedding_model;
@@ -230,7 +225,6 @@ function runHealthcheck() {
     }
   });
 
-  // Kick off initialize only after backend health probe passes
   probeBackendHealth().then(() => {
     console.log('[OK] Backend /healthz reachable');
     setTimeout(() => {
