@@ -57,7 +57,9 @@ function sendSampleToolCall(proc) {
 function probeBackendHealth(timeoutMs = 3000) {
   return new Promise((resolve, reject) => {
     const port = process.env.MYTHOS_PORT || '8013';
-    const req = http.request(`http://localhost:${port}/healthz`, { method: 'GET' }, (res) => {
+    // Use 127.0.0.1 explicitly — on Windows 10, Node resolves localhost to ::1
+    // (IPv6) while uvicorn --host 0.0.0.0 only binds IPv4.
+    const req = http.request(`http://127.0.0.1:${port}/healthz`, { method: 'GET' }, (res) => {
       let body = '';
       res.on('data', c => body += c);
       res.on('end', () => {
@@ -142,7 +144,6 @@ function runHealthcheck() {
             const text = msg.result.content?.[0]?.text || JSON.stringify(msg.result);
             let parsed; try { parsed = JSON.parse(text); } catch { parsed = {}; }
             if (msg.id === 3) {
-              // archetype analysis semantic fields
               const keys = ['confidence_primary','confidence_secondary','tension_score'];
               const missing = keys.filter(k => !(k in parsed));
               console.log(missing.length===0 ? '[OK] semantic fields present (single-framework)' : `[WARN] missing fields: ${missing.join(', ')}`);
@@ -154,14 +155,12 @@ function runHealthcheck() {
               pendingSessionId = parsed.session_id;
               if (pendingSessionId) {
                 console.log(`[OK] session started id=${pendingSessionId}`);
-                // send update + finalize + list
                 const updateReq = { jsonrpc:'2.0', id:6, method:'tools/call', params:{ name:'mythos_creation_session_update', arguments:{ session_id: pendingSessionId, updates:{ 'Basic Info': { 'Name':'Test Character' } } } } };
                 proc.stdin.write(JSON.stringify(updateReq)+'\n');
                 const finalizeReq = { jsonrpc:'2.0', id:7, method:'tools/call', params:{ name:'mythos_creation_session_finalize', arguments:{ session_id: pendingSessionId } } };
                 proc.stdin.write(JSON.stringify(finalizeReq)+'\n');
                 const listReq = { jsonrpc:'2.0', id:8, method:'tools/call', params:{ name:'mythos_creation_session_list', arguments:{} } };
                 proc.stdin.write(JSON.stringify(listReq)+'\n');
-                // Optional: roleplay persona generation from the same character session
                 const roleplayReq = { jsonrpc:'2.0', id:10, method:'tools/call', params:{ name:'mythos_roleplay_start', arguments:{ session_id: pendingSessionId } } };
                 proc.stdin.write(JSON.stringify(roleplayReq)+'\n');
               } else {
@@ -193,9 +192,8 @@ function runHealthcheck() {
             } else if (msg.id === 11) {
               const hasId = parsed.entry_id && parsed.entry_id.length > 0;
               console.log(hasId ? `[OK] lore entry created with id=${parsed.entry_id}` : '[WARN] lore creation missing entry_id');
-              embeddingValidated = false; // not validated yet, will validate from search
+              embeddingValidated = false;
             } else if (msg.id === 12) {
-              // Semantic search validation
               const hasResults = Array.isArray(parsed.results);
               const embeddingModel = parsed.embedding_model;
               console.log(hasResults ? `[OK] semantic search returned ${parsed.results.length} results (model: ${embeddingModel || 'local'})` : '[WARN] semantic search missing results array');
@@ -206,7 +204,6 @@ function runHealthcheck() {
                 process.exit(0);
               }
             } else if (msg.id === 10) {
-              // roleplay validation (optional, runs in parallel)
               console.log('[OK] roleplay persona generated');
             }
           }
@@ -246,7 +243,7 @@ function runHealthcheck() {
     }, 50);
   }).catch(err => {
     console.error(`[ERROR] Backend health probe failed: ${err.message}`);
-    console.error('Hint: run `docker compose up --build -d` before healthcheck.');
+    console.error('Hint: Is the backend running? Start it with: python -m uvicorn mythos_backend.main:app --host 0.0.0.0 --port 8013 --no-access-log');
     proc.kill();
     process.exit(1);
   });
