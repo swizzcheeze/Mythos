@@ -33,3 +33,7 @@ Miniforge3-*.sh
 
 # But keep example
 !.env.example
+
+# World data / sessions / lore (generated locally, not for repo)
+world_data/
+image/
