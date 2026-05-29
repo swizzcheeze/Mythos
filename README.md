@@ -246,7 +246,7 @@ Mythos v2.0 is functional but still needs more real-world testing. The core CRUD
 
 ## 🙏 Acknowledgments
 
-This project started about a year ago — built with Gemini, ChatGPT, and Claude. It went off track and had fundamental bugs. **OWL-Alpha (OpenRouter) paired with Hermes Agent** fixed it and rebuilt the backend from the ground up into v2.0.
+This project started about a year ago — built with Gemini, ChatGPT, and Claude. It went off track and had fundamental bugs. **OWL-Alpha paired with Hermes Agent** fixed it and rebuilt the backend from the ground up into v2.0.
 
 ---
 
