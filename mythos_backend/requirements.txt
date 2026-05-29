@@ -15,9 +15,9 @@ langgraph>=0.2,<1.0
 langchain-ollama>=0.1,<1.0
 
 # LLM provider clients (all optional — only needed if configured)
-anthropics>=0.39,<1.0        # Anthropic Claude
-openai>=1.54,<2.0           # OpenRouter, xAI (Grok) — OpenAI-compatible
-groq>=0.11,<1.0             # Groq
+anthropic>=0.80,<1.0         # Anthropic Claude
+openai>=1.54,<2.0            # OpenRouter, xAI (Grok) — OpenAI-compatible
+groq>=0.11,<1.0              # Groq
 google-generativeai>=0.8,<1.0  # Google Gemini
 
 # Optional: Cohere for embeddings
