@@ -287,7 +287,7 @@ if [[ "$SKIP_HEALTHCHECK" == "false" && "$NO_START" == "false" ]]; then
     header "Health Check"
 
     info "Waiting for backend to start..."
-    HEALTH_URL="http://127.0.0.1:${PORT}/healthz"
+    HEALTH_URL="http://localhost:${PORT}/healthz"
     TRIES=0
     MAX_TRIES=15
     while [[ $TRIES -lt $MAX_TRIES ]]; do
@@ -325,9 +325,9 @@ header "Installation Complete"
 
 echo -e "  ${GREEN}Mythos World Engine is ready.${NC}\n"
 echo -e "  Endpoints:"
-echo -e "    API:      ${CYAN}http://127.0.0.1:${PORT}${NC}"
-echo -e "    Docs:     ${CYAN}http://127.0.0.1:${PORT}/docs${NC}"
-echo -e "    Health:   ${CYAN}http://127.0.0.1:${PORT}/healthz${NC}"
+echo -e "    API:      ${CYAN}http://localhost:${PORT}${NC}"
+echo -e "    Docs:     ${CYAN}http://localhost:${PORT}/docs${NC}"
+echo -e "    Health:   ${CYAN}http://localhost:${PORT}/healthz${NC}"
 echo ""
 echo -e "  Manage:"
 if [[ "$METHOD" == "docker" ]]; then

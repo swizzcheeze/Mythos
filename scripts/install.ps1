@@ -271,7 +271,7 @@ if ($Method -eq "docker") {
 if (-not $SkipHealthcheck -and -not $NoStart) {
     Header "Health Check"
 
-    $healthUrl = "http://127.0.0.1:$Port/healthz"
+    $healthUrl = "http://localhost:$Port/healthz"
     Info "Waiting for backend to start..."
 
     $trials = 0
@@ -318,9 +318,9 @@ Header "Installation Complete"
 Write-Host "  Mythos World Engine is ready." -ForegroundColor Green
 Write-Host ""
 Write-Host "  Endpoints:"
-Write-Host "    API:      http://127.0.0.1:$Port" -ForegroundColor Cyan
-Write-Host "    Docs:     http://127.0.0.1:$Port/docs" -ForegroundColor Cyan
-Write-Host "    Health:   http://127.0.0.1:$Port/healthz" -ForegroundColor Cyan
+Write-Host "    API:      http://localhost:$Port" -ForegroundColor Cyan
+Write-Host "    Docs:     http://localhost:$Port/docs" -ForegroundColor Cyan
+Write-Host "    Health:   http://localhost:$Port/healthz" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "  Manage:"
 if ($Method -eq "docker") {

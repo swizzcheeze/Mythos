@@ -56,9 +56,8 @@ function sendSampleToolCall(proc) {
 function probeBackendHealth(timeoutMs = 3000) {
   return new Promise((resolve, reject) => {
     const port = process.env.MYTHOS_PORT || '8013';
-    // Use 127.0.0.1 — on Windows 10 Node resolves localhost to ::1 (IPv6)
-    // while uvicorn --host 0.0.0.0 only binds IPv4.
-    const req = http.request(`http://127.0.0.1:${port}/healthz`, { method: 'GET' }, (res) => {
+    // Use localhost — on Windows 11 Docker Desktop, 127.0.0.1 hangs while localhost (::1) works.
+    const req = http.request(`http://localhost:${port}/healthz`, { method: 'GET' }, (res) => {
       let body = '';
       res.on('data', c => body += c);
       res.on('end', () => {

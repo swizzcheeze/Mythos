@@ -98,7 +98,7 @@ if [[ "$SKIP_START" == "false" ]]; then
     header "Starting Backend"
 
     # Check if already running
-    if curl -sf "http://127.0.0.1:${PORT}/healthz" &>/dev/null; then
+    if curl -sf "http://localhost:${PORT}/healthz" &>/dev/null; then
         ok "Backend already running on port $PORT"
     else
         export MYTHOS_PORT="$PORT"
@@ -112,7 +112,7 @@ if [[ "$SKIP_START" == "false" ]]; then
             # Wait for health
             TRIES=0
             while [[ $TRIES -lt 15 ]]; do
-                if curl -sf "http://127.0.0.1:${PORT}/healthz" &>/dev/null; then
+                if curl -sf "http://localhost:${PORT}/healthz" &>/dev/null; then
                     break
                 fi
                 sleep 2
@@ -138,7 +138,7 @@ if [[ "$SKIP_START" == "false" ]]; then
 
             TRIES=0
             while [[ $TRIES -lt 15 ]]; do
-                if curl -sf "http://127.0.0.1:${PORT}/healthz" &>/dev/null; then
+                if curl -sf "http://localhost:${PORT}/healthz" &>/dev/null; then
                     break
                 fi
                 sleep 2
@@ -146,7 +146,7 @@ if [[ "$SKIP_START" == "false" ]]; then
             done
         fi
 
-        if curl -sf "http://127.0.0.1:${PORT}/healthz" &>/dev/null; then
+        if curl -sf "http://localhost:${PORT}/healthz" &>/dev/null; then
             ok "Backend is healthy on port $PORT"
         else
             error "Backend failed to start within 30 seconds."
@@ -187,7 +187,7 @@ fi
 header "Setup Complete"
 
 echo -e "  ${GREEN}Mythos is registered as a Hermes Agent MCP plugin.${NC}\n"
-echo -e "  Backend:   ${CYAN}http://127.0.0.1:${PORT}${NC}"
+echo -e "  Backend:   ${CYAN}http://localhost:${PORT}${NC}"
 echo -e "  Bridge:    ${CYAN}${BRIDGE_PATH}${NC}"
 echo -e "  Tools:     ${CYAN}21 mythos_* tools${NC} available in new Hermes sessions"
 echo ""

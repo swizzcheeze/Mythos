@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 // Configuration for the Mythos Backend
-// Use 127.0.0.1 explicitly — on Windows 10, Node resolves localhost to ::1
-// (IPv6) while uvicorn --host 0.0.0.0 only binds IPv4.
-const BASE_URL = `http://127.0.0.1:${process.env.MYTHOS_PORT || '8013'}`;
+// Use localhost — Node resolves to ::1 (IPv6) which works because
+// Docker Desktop port forwarding on Windows 11 handles ::1 but not 127.0.0.1.
+const BASE_URL = `http://localhost:${process.env.MYTHOS_PORT || '8013'}`;
 const http = require('http');
 
 // Tool definitions, mirroring the FastAPI backend's Pydantic models

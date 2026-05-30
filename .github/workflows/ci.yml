@@ -33,15 +33,15 @@ jobs:
       - name: Start FastAPI backend (uvicorn + readiness loop)
         working-directory: mythos_backend
         run: |
-          nohup python -m uvicorn mythos_backend:app --host 127.0.0.1 --port 8001 &
+          nohup python -m uvicorn mythos_backend:app --host 127.0.0.1 --port 8013 &
           echo "Backend starting via uvicorn..."
           for i in {1..40}; do
-            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8001/healthz || true)
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8013/healthz || true)
             if [ "$code" = "200" ]; then echo "Backend healthy"; break; fi
             echo "Waiting for backend (attempt $i)... (status=$code)";
             sleep 0.25;
           done
-          code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8001/healthz || true)
+          code=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:8013/healthz || true)
           if [ "$code" != "200" ]; then echo "Backend failed to start (final status $code)"; exit 1; fi
 
       - name: Run Healthcheck

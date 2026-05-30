@@ -85,7 +85,7 @@ if ($existing -match "mythos") {
 if (-not $SkipStart) {
     Header "Starting Backend"
 
-    $healthUrl = "http://127.0.0.1:$Port/healthz"
+    $healthUrl = "http://localhost:$Port/healthz"
     $alreadyRunning = $false
     try {
         $resp = Invoke-WebRequest -Uri $healthUrl -UseBasicParsing -TimeoutSec 2 -ErrorAction Stop
@@ -176,7 +176,7 @@ Header "Setup Complete"
 
 Write-Color "  Mythos is registered as a Hermes Agent MCP plugin." Green
 Write-Host ""
-Write-Host "  Backend:   http://127.0.0.1:$Port" -ForegroundColor Cyan
+Write-Host "  Backend:   http://localhost:$Port" -ForegroundColor Cyan
 Write-Host "  Bridge:    $BridgePath" -ForegroundColor Cyan
 Write-Host "  Tools:     21 mythos_* tools available in new Hermes sessions" -ForegroundColor Cyan
 Write-Host ""

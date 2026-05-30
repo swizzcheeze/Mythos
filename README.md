@@ -67,7 +67,7 @@ $env:MYTHOS_PORT = "9090"; docker compose up -d
 ### For Both Options: Verify Backend
 
 ```bash
-curl http://127.0.0.1:8013/healthz
+curl http://localhost:8013/healthz
 # Should return: {"status":"ok","version":"2.0.0"}
 ```
 

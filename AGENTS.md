@@ -28,7 +28,7 @@ python -m mythos_backend.main &
 
 Verify the backend is running:
 ```bash
-curl http://127.0.0.1:8013/healthz
+curl http://localhost:8013/healthz
 # Should return: {"status":"ok","version":"2.0.0"}
 ```
 
@@ -81,7 +81,7 @@ All 21 tools are now available prefixed with `mythos_`:
 
 1. **Relative paths won't work.** `mythos-bridge.js` must be registered with an absolute path. If the MCP server fails to connect, check the path first.
 
-2. **Backend must be running before the bridge connects.** The bridge tries to reach `http://127.0.0.1:8013` on every tool call. If the backend is down, tool calls return connection errors.
+2. **Backend must be running before the bridge connects.** The bridge tries to reach `http://localhost:8013` on every tool call. If the backend is down, tool calls return connection errors.
 
 3. **Port is configurable.** Set `MYTHOS_PORT` env var to change from the default `8013`. The bridge, backend, and healthcheck all read this variable.
 
@@ -106,5 +106,5 @@ echo "Y" | hermes mcp add mythos --command node --args "$(pwd)/mythos-bridge.js"
 
 # Verify
 hermes mcp test mythos
-curl http://127.0.0.1:8013/healthz
+curl http://localhost:8013/healthz
 ```
